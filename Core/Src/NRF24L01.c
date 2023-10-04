@@ -27,49 +27,29 @@ static bool NRF_isInit_B = false;
 
 extern SPI_HandleTypeDef hspi1;
 
-void CS_Select (void)
-{
-	HAL_GPIO_WritePin(CSN_GPIO_Port, CSN_Pin, GPIO_PIN_RESET);
-}
-
-void CS_UnSelect (void)
-{
-	HAL_GPIO_WritePin(CSN_GPIO_Port, CSN_Pin, GPIO_PIN_SET);
-}
-
 
 
 // write a single byte to the particular register
-void NRF_WriteReg_EN (uint8_t Reg, uint8_t Data)
+static void NRF_WriteReg_EN (uint8_t Reg, uint8_t Data)
 {
-	uint8_t buf[2];
-	buf[0] = Reg|1<<5;
-	buf[1] = Data;
-
-	// Pull the CS Pin LOW to select the device
-	CS_Select();
-
-	HAL_writeSpiValue_EN(buf, 2);
-
-	// Pull the CS HIGH to release the device
-	CS_UnSelect();
+	uint8_t buf_U8A[2];
+	buf_U8A[0] = Reg|1<<5;
+	buf_U8A[1] = Data;
+	HAL_writeSpiValue_EN(buf_U8A, 2);
 }
 
 //write multiple bytes starting from a particular register
-void NRF_WriteReg_ENMulti (uint8_t Reg, uint8_t *data, int size)
+void NRF_WriteReg_Multi_EN (uint8_t Reg, uint8_t *data, int size)
 {
-	uint8_t buf[2];
-	buf[0] = Reg|1<<5;
-//	buf[1] = Data;
+	uint8_t buf_U8A[1+size];
+	buf_U8A[0] = Reg|1<<5;
 
-	// Pull the CS Pin LOW to select the device
-	CS_Select();
 
-	HAL_writeSpiValue_EN(buf, 1);
-	HAL_writeSpiValue_EN(data, size);
+	for(uint16_t counter_U16=0 ; counter_U16<size ; counter_U16++){
+		buf_U8A[1+counter_U16] = data[counter_U16];
+	}
 
-	// Pull the CS HIGH to release the device
-	CS_UnSelect();
+	HAL_writeSpiValue_EN(buf_U8A, 1+size);
 }
 
 
@@ -82,29 +62,16 @@ static NRF_ret_val_en nrf24_ReadReg_EN(uint8_t register_REG, uint8_t* read_value
 
 
 /* Read multiple bytes from the register */
-void nrf24_ReadReg_Multi_EN (uint8_t Reg, uint8_t *data, int size)
+static void nrf24_ReadReg_Multi_EN (uint8_t Reg, uint8_t *data, int size)
 {
-	// Pull the CS Pin LOW to select the device
-	CS_Select();
-
-	HAL_writeSpiValue_EN(&Reg, 1);
-	HAL_SPI_Receive(&hspi1, data, size, 1000);
-
-	// Pull the CS HIGH to release the device
-	CS_UnSelect();
+	HAL_readSpiValue_EN((uint8_t)Reg,data,size);
 }
 
 
 // send the command to the NRF
 void nrfsendCmd_EN (uint8_t cmd)
 {
-	// Pull the CS Pin LOW to select the device
-	CS_Select();
-
 	HAL_writeSpiValue_EN(&cmd, 1);
-
-	// Pull the CS HIGH to release the device
-	CS_UnSelect();
 }
 
 void nrf24_reset(uint8_t REG)
@@ -131,15 +98,15 @@ void nrf24_reset(uint8_t REG)
 	NRF_WriteReg_EN(OBSERVE_TX, 0x00);
 	NRF_WriteReg_EN(CD, 0x00);
 	uint8_t rx_addr_p0_def[5] = {0xE7, 0xE7, 0xE7, 0xE7, 0xE7};
-	NRF_WriteReg_ENMulti(RX_ADDR_P0, rx_addr_p0_def, 5);
+	NRF_WriteReg_Multi_EN(RX_ADDR_P0, rx_addr_p0_def, 5);
 	uint8_t rx_addr_p1_def[5] = {0xC2, 0xC2, 0xC2, 0xC2, 0xC2};
-	NRF_WriteReg_ENMulti(RX_ADDR_P1, rx_addr_p1_def, 5);
+	NRF_WriteReg_Multi_EN(RX_ADDR_P1, rx_addr_p1_def, 5);
 	NRF_WriteReg_EN(RX_ADDR_P2, 0xC3);
 	NRF_WriteReg_EN(RX_ADDR_P3, 0xC4);
 	NRF_WriteReg_EN(RX_ADDR_P4, 0xC5);
 	NRF_WriteReg_EN(RX_ADDR_P5, 0xC6);
 	uint8_t tx_addr_def[5] = {0xE7, 0xE7, 0xE7, 0xE7, 0xE7};
-	NRF_WriteReg_ENMulti(TX_ADDR, tx_addr_def, 5);
+	NRF_WriteReg_Multi_EN(TX_ADDR, tx_addr_def, 5);
 	NRF_WriteReg_EN(RX_PW_P0, 0);
 	NRF_WriteReg_EN(RX_PW_P1, 0);
 	NRF_WriteReg_EN(RX_PW_P2, 0);
@@ -164,7 +131,7 @@ void NRF24_Init_EN(NRF_HAL_function_str NRF_HAL_function_STR)
 
 	// disable the chip before configuring the device
 	NRF_HAL_function_local_STR.setCe_PF(false);
-	CS_UnSelect();
+	//CS_UnSelect();
 
 
 	// reset everything
@@ -186,7 +153,7 @@ void NRF24_Init_EN(NRF_HAL_function_str NRF_HAL_function_STR)
 
 	// Enable the chip after configuring the device
 	NRF_HAL_function_local_STR.setCe_PF(true);
-	CS_Select();
+	//CS_Select();
 	NRF_isInit_B = true;
 
 }
@@ -198,11 +165,11 @@ void NRF24_TxMode (uint8_t *Address, uint8_t channel)
 {
 	// disable the chip before configuring the device
 	NRF_HAL_function_local_STR.setCe_PF(false);
-	CS_UnSelect();
+	//CS_UnSelect();
 
 	NRF_WriteReg_EN (RF_CH, channel);  // select the channel
 
-	NRF_WriteReg_ENMulti(TX_ADDR, Address, 5);  // Write the TX address
+	NRF_WriteReg_Multi_EN(TX_ADDR, Address, 5);  // Write the TX address
 
 
 	// power up the device
@@ -225,7 +192,7 @@ uint8_t NRF24_Transmit (uint8_t *data)
 	uint8_t fifostatus = 0;
 
 	// select the device
-	CS_Select();
+	//CS_Select();
 
 	// payload command
 	cmdtosend = W_TX_PAYLOAD;
@@ -235,7 +202,7 @@ uint8_t NRF24_Transmit (uint8_t *data)
 	HAL_writeSpiValue_EN(data, 32);
 
 	// Unselect the device
-	CS_UnSelect();
+	//CS_UnSelect();
 
 	HAL_delay_ms(1);
 
@@ -278,7 +245,7 @@ void NRF24_RxMode (uint8_t *Address, uint8_t channel)
 	 * Pipe 3 ADDR = 0xAABBCCDD33
 	 *
 	 */
-	NRF_WriteReg_ENMulti(RX_ADDR_P1, Address, 5);  // Write the Pipe1 address
+	NRF_WriteReg_Multi_EN(RX_ADDR_P1, Address, 5);  // Write the Pipe1 address
 	//NRF_WriteReg_EN(RX_ADDR_P2, 0xEE);  // Write the Pipe2 LSB address
 
 	NRF_WriteReg_EN (RX_PW_P1, 32);   // 32 bit payload size for pipe 2
