@@ -38,17 +38,6 @@ void CS_UnSelect (void)
 }
 
 
-void CE_Enable (void)
-{
-	HAL_GPIO_WritePin(CE_GPIO_Port, CE_Pin, GPIO_PIN_SET);
-}
-
-void CE_Disable (void)
-{
-	HAL_GPIO_WritePin(CE_GPIO_Port, CE_Pin, GPIO_PIN_RESET);
-}
-
-
 
 // write a single byte to the particular register
 void NRF_WriteReg_EN (uint8_t Reg, uint8_t Data)
@@ -60,7 +49,7 @@ void NRF_WriteReg_EN (uint8_t Reg, uint8_t Data)
 	// Pull the CS Pin LOW to select the device
 	CS_Select();
 
-	HAL_SPI_Transmit(&hspi1, buf, 2, 1000);
+	HAL_writeSpiValue_EN(buf, 2);
 
 	// Pull the CS HIGH to release the device
 	CS_UnSelect();
@@ -76,8 +65,8 @@ void NRF_WriteReg_ENMulti (uint8_t Reg, uint8_t *data, int size)
 	// Pull the CS Pin LOW to select the device
 	CS_Select();
 
-	HAL_SPI_Transmit(&hspi1, buf, 1, 100);
-	HAL_SPI_Transmit(&hspi1, data, size, 1000);
+	HAL_writeSpiValue_EN(buf, 1);
+	HAL_writeSpiValue_EN(data, size);
 
 	// Pull the CS HIGH to release the device
 	CS_UnSelect();
@@ -98,7 +87,7 @@ void nrf24_ReadReg_Multi_EN (uint8_t Reg, uint8_t *data, int size)
 	// Pull the CS Pin LOW to select the device
 	CS_Select();
 
-	HAL_SPI_Transmit(&hspi1, &Reg, 1, 100);
+	HAL_writeSpiValue_EN(&Reg, 1);
 	HAL_SPI_Receive(&hspi1, data, size, 1000);
 
 	// Pull the CS HIGH to release the device
@@ -112,7 +101,7 @@ void nrfsendCmd_EN (uint8_t cmd)
 	// Pull the CS Pin LOW to select the device
 	CS_Select();
 
-	HAL_SPI_Transmit(&hspi1, &cmd, 1, 100);
+	HAL_writeSpiValue_EN(&cmd, 1);
 
 	// Pull the CS HIGH to release the device
 	CS_UnSelect();
@@ -240,10 +229,10 @@ uint8_t NRF24_Transmit (uint8_t *data)
 
 	// payload command
 	cmdtosend = W_TX_PAYLOAD;
-	HAL_SPI_Transmit(&hspi1, &cmdtosend, 1, 100);
+	HAL_writeSpiValue_EN(&cmdtosend, 1);
 
 	// send the payload
-	HAL_SPI_Transmit(&hspi1, data, 32, 1000);
+	HAL_writeSpiValue_EN(data, 32);
 
 	// Unselect the device
 	CS_UnSelect();
