@@ -23,6 +23,7 @@
 /* USER CODE BEGIN Includes */
 #include "NRF24L01.h"
 #include "string.h"
+#include "hal.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -50,7 +51,13 @@ UART_HandleTypeDef huart2;
 DMA_HandleTypeDef hdma_usart2_rx;
 
 /* USER CODE BEGIN PV */
-
+const static NRF_HAL_function_str NRF_HAL_function_local_STR =
+{
+	.readSpiValue_EN_PF = HAL_readSpiValue_EN,
+	.setCe_PF = HAL_setCE,
+	.setIrq_PF = HAL_setIRQ,
+	.writeSpiValue_EN_PF = HAL_writeSpiValue_EN
+};
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -110,7 +117,7 @@ int main(void)
   MX_USART2_UART_Init();
   MX_SPI1_Init();
   /* USER CODE BEGIN 2 */
-  NRF24_Init();
+  NRF24_Init_EN(NRF_HAL_function_local_STR);
 
 #ifdef RX_MODE
   NRF24_RxMode(RxAddress, 10);
@@ -128,7 +135,7 @@ int main(void)
 
     /* USER CODE BEGIN 3 */
 #ifdef RX_MODE
-	  if (isDataAvailable(1) == 1)
+	  if (isDataAvailable_EN(1) == NRF_DATA_AVAILABLE_EN)
 	  {
 		  NRF24_Receive(RxData);
 		  HAL_UART_Transmit(&huart2, RxData, strlen((char *)RxData), 1000);
