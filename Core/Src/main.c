@@ -33,7 +33,7 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-//#define TX_MODE
+#define TX_MODE
 #ifndef TX_MODE
 #define RX_MODE
 #endif
@@ -122,9 +122,9 @@ int main(void)
 #ifdef RX_MODE
   NRF24_RxMode(RxAddress, 10);
 #else
-  NRF24_TxMode(TxAddress, 10);
+  NRF24_TxMode_EN(TxAddress, 10);
 #endif
-  NRF24_ReadAll(data);
+  //NRF24_ReadAll(data);
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -137,11 +137,11 @@ int main(void)
 #ifdef RX_MODE
 	  if (isDataAvailable_EN(1) == NRF_DATA_AVAILABLE_EN)
 	  {
-		  NRF24_Receive(RxData);
+		  NRF24_Receive_EN(RxData);
 		  HAL_UART_Transmit(&huart2, RxData, strlen((char *)RxData), 1000);
 	  }
 #else
-	  if (NRF24_Transmit(TxData) == 1)
+	  if (NRF24_Transmit_EN(TxData,12) == 1)
 	  {
 		  HAL_Delay(1);
 	  }
