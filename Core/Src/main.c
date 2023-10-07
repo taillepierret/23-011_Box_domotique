@@ -24,6 +24,7 @@
 #include "NRF24L01.h"
 #include "string.h"
 #include "hal.h"
+#include "tools.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -119,6 +120,12 @@ int main(void)
   /* USER CODE BEGIN 2 */
   NRF24_Init_EN(NRF_HAL_function_local_STR);
 
+  uint8_t trame[] = {0x01, 0x02, 0x03, 0x04}; // Remplacez cela par votre propre trame
+
+  size_t trame_length = sizeof(trame) / sizeof(trame[0]);
+
+  uint8_t crc = calculate_crc8_U8(trame, trame_length);
+  HAL_UART_Transmit(&huart2, &crc, 1, 1000);
 #ifdef RX_MODE
   NRF24_RxMode(RxAddress, 10);
 #else
