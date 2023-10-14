@@ -23,6 +23,8 @@
 /* USER CODE BEGIN Includes */
 #include "NRF24L01.h"
 #include "string.h"
+#include "hal.h"
+#include "tools.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -32,7 +34,7 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-//#define TX_MODE
+#define TX_MODE
 #ifndef TX_MODE
 #define RX_MODE
 #endif
@@ -50,7 +52,13 @@ UART_HandleTypeDef huart2;
 DMA_HandleTypeDef hdma_usart2_rx;
 
 /* USER CODE BEGIN PV */
-
+const static NRF_HAL_function_str NRF_HAL_function_local_STR =
+{
+	.readSpiValue_EN_PF = HAL_readSpiValue_EN,
+	.setCe_PF = HAL_setCE,
+	.setIrq_PF = HAL_setIRQ,
+	.writeSpiValue_EN_PF = HAL_writeSpiValue_EN
+};
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -110,14 +118,20 @@ int main(void)
   MX_USART2_UART_Init();
   MX_SPI1_Init();
   /* USER CODE BEGIN 2 */
-  NRF24_Init();
+  NRF24_Init_EN(NRF_HAL_function_local_STR);
 
+  uint8_t trame[] = {0x01, 0x02, 0x03, 0x04}; // Remplacez cela par votre propre trame
+
+  size_t trame_length = sizeof(trame) / sizeof(trame[0]);
+
+  uint8_t crc = calculate_crc8_U8(trame, trame_length);
+  HAL_UART_Transmit(&huart2, &crc, 1, 1000);
 #ifdef RX_MODE
   NRF24_RxMode(RxAddress, 10);
 #else
-  NRF24_TxMode(TxAddress, 10);
+  NRF24_TxMode_EN(TxAddress, 10);
 #endif
-  NRF24_ReadAll(data);
+  //NRF24_ReadAll(data);
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -128,13 +142,13 @@ int main(void)
 
     /* USER CODE BEGIN 3 */
 #ifdef RX_MODE
-	  if (isDataAvailable(1) == 1)
+	  if (isDataAvailable_EN(1) == NRF_DATA_AVAILABLE_EN)
 	  {
-		  NRF24_Receive(RxData);
+		  NRF24_Receive_EN(RxData);
 		  HAL_UART_Transmit(&huart2, RxData, strlen((char *)RxData), 1000);
 	  }
 #else
-	  if (NRF24_Transmit(TxData) == 1)
+	  if (NRF24_Transmit_EN(TxData,12) == 1)
 	  {
 		  HAL_Delay(1);
 	  }
