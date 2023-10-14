@@ -21,10 +21,10 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include "NRF24L01.h"
 #include "string.h"
 #include "hal.h"
 #include "tools.h"
+#include "Ted24.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -34,8 +34,8 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-#define TX_MODE
-#ifndef TX_MODE
+#define SERVEUR
+#ifndef SERVEUR
 #define RX_MODE
 #endif
 /* USER CODE END PD */
@@ -74,15 +74,14 @@ static void MX_SPI1_Init(void);
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
 
-#ifdef RX_MODE
-uint8_t RxAddress[] = {0xEE,0xDD,0xCC,0xBB,0xAA};
-uint8_t RxData[32];
+#ifdef SERVEUR
+uint8_t my_addr = 69;
+uint8_t addr_dst = 14;
+TED_packet_un TED_packet_UN;
 #else
-uint8_t TxAddress[] = {0xEE,0xDD,0xCC,0xBB,0xAA};
-uint8_t TxData[] = "Hello World\n";
+uint8_t my_addr = 14;
+uint8_t addr_dst = 69;
 #endif
-
-uint8_t data[50];
 
 /* USER CODE END 0 */
 
@@ -118,19 +117,7 @@ int main(void)
   MX_USART2_UART_Init();
   MX_SPI1_Init();
   /* USER CODE BEGIN 2 */
-  NRF24_Init_EN(NRF_HAL_function_local_STR);
-
-  uint8_t trame[] = {0x01, 0x02, 0x03, 0x04}; // Remplacez cela par votre propre trame
-
-  size_t trame_length = sizeof(trame) / sizeof(trame[0]);
-
-  uint8_t crc = calculate_crc8_U8(trame, trame_length);
-  HAL_UART_Transmit(&huart2, &crc, 1, 1000);
-#ifdef RX_MODE
-  NRF24_RxMode_EN(RxAddress, 10);
-#else
-  NRF24_TxMode_EN(TxAddress, 10);
-#endif
+  TED_init(my_addr, NRF_HAL_function_local_STR,true);
   //NRF24_ReadAll(data);
   /* USER CODE END 2 */
 
@@ -141,18 +128,14 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-#ifdef RX_MODE
-	  if (NRF24_isDataAvailable_EN(1) == NRF_DATA_AVAILABLE_EN)
+#ifdef SERVEUR
+	  if (TED_IsDataAvailable_B())
 	  {
-		  NRF24_Receive_EN(RxData);
-		  HAL_UART_Transmit(&huart2, RxData, strlen((char *)RxData), 1000);
+		  TED_receive_EN(TED_packet_UN);
+		  print_rx_packet_with_string_payload(TED_packet_UN);
 	  }
 #else
-	  if (NRF24_Transmit_EN(TxData,12) == 1)
-	  {
-		  HAL_Delay(1);
-	  }
-
+	  TED_ping_EN(addr_dst);
 	  HAL_Delay(1000);
 #endif
   }

@@ -27,12 +27,12 @@ TED_config_node_str local_TED_config_node_TED = {0};
 TED_ret_val_en TED_init(uint8_t my_address_U8,NRF_HAL_function_str NRF_HAL_function_STR,bool flag_activating_low_power_mode_B)
 {
 	NRF_ret_val_en NRF_ret_val_EN;
-	NRF_ret_val_EN = NRF24_RxMode_EN(PipeAddress, 10);
+	NRF_ret_val_EN = NRF24_Init_EN(NRF_HAL_function_STR);
 	if(NRF_ret_val_EN != NRF_OK_EN)
 	{
 		return TED_NOT_INIT_EN;
 	}
-	NRF_ret_val_EN = NRF24_Init_EN(NRF_HAL_function_STR);
+	NRF_ret_val_EN = NRF24_RxMode_EN(PipeAddress, 10);
 	if(NRF_ret_val_EN != NRF_OK_EN)
 	{
 		return TED_NOT_INIT_EN;
@@ -100,7 +100,7 @@ TED_ret_val_en TED_ping_EN(uint8_t address_dst_U8)
 	}
 }
 
-static inline void print_rx_packet_with_string_payload(TED_packet_un TED_packet_UN)
+inline void print_rx_packet_with_string_payload(TED_packet_un TED_packet_UN)
 {
 	char string[cSIZE_BUFFER_TX_MAX_U8-12] = "";
 	for (uint8_t index_U8=0 ; index_U8<cSIZE_BUFFER_TX_MAX_U8-12 ; index_U8++)

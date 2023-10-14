@@ -43,9 +43,11 @@ typedef enum
 }TED_function_en;
 
 
-inline bool TED_IsDataAvailable_B(void);
+bool TED_IsDataAvailable_B(void);
+TED_ret_val_en TED_ping_EN(uint8_t address_dst_U8);
 TED_ret_val_en TED_init(uint8_t my_address_U8,NRF_HAL_function_str NRF_HAL_function_STR,bool flag_activating_low_power_mode_B);
-inline TED_ret_val_en TED_receive_EN(TED_packet_un TED_packet_UN);
+TED_ret_val_en TED_receive_EN(TED_packet_un TED_packet_UN);
+void print_rx_packet_with_string_payload(TED_packet_un TED_packet_UN);
 
 
 
