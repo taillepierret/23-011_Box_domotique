@@ -142,7 +142,7 @@ int main(void)
 
     /* USER CODE BEGIN 3 */
 #ifdef RX_MODE
-	  if (isDataAvailable_EN(1) == NRF_DATA_AVAILABLE_EN)
+	  if (NRF24_isDataAvailable_EN(1) == NRF_DATA_AVAILABLE_EN)
 	  {
 		  NRF24_Receive_EN(RxData);
 		  HAL_UART_Transmit(&huart2, RxData, strlen((char *)RxData), 1000);

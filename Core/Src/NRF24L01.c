@@ -498,7 +498,7 @@ NRF_ret_val_en NRF24_RxMode_EN (uint8_t *Address_U8P, uint8_t channel_U8)
 }
 
 
-NRF_ret_val_en isDataAvailable_EN(uint8_t pipenum_U8)
+NRF_ret_val_en NRF24_isDataAvailable_EN(uint8_t pipenum_U8)
 {
 	if(NRF_isInit_B == false)
 	{

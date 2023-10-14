@@ -7,8 +7,10 @@
 
 #include "hal.h"
 #include "main.h"
+#include <string.h>
 
 extern SPI_HandleTypeDef hspi1;
+extern UART_HandleTypeDef huart2;
 static bool HAL_spiIsInit = false;
 
 inline uint32_t HAL_millis_U32(void)
@@ -73,6 +75,11 @@ HAL_ret_val_en HAL_readSpiValue_EN(uint8_t reg_U8, uint8_t* read_value_U8A,uint1
 inline void HAL_delay_ms(uint32_t time_ms_U32)
 {
 	HAL_Delay(time_ms_U32);
+}
+
+inline void print_string(char* string)
+{
+	 HAL_UART_Transmit(&huart2, (uint8_t*)string, strlen(string), 100);
 }
 
 

@@ -1,7 +1,0 @@
-../Core/Src/hal.c:14:17:HAL_millis_U32	1
-../Core/Src/hal.c:19:6:HAL_spiInit	1
-../Core/Src/hal.c:25:13:HAL_setCE	1
-../Core/Src/hal.c:30:13:HAL_setIRQ	1
-../Core/Src/hal.c:35:16:HAL_writeSpiValue_EN	2
-../Core/Src/hal.c:51:16:HAL_readSpiValue_EN	3
-../Core/Src/hal.c:73:13:HAL_delay_ms	1

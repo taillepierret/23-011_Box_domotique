@@ -21,7 +21,6 @@
 #ifndef INC_NRF24L01_H_
 #define INC_NRF24L01_H_
 
-#include "stdint.h"
 #include "hal.h"
 
 #define cSIZE_BUFFER_TX_MAX_U8 32
@@ -88,7 +87,7 @@ NRF_ret_val_en NRF24_Init_EN(NRF_HAL_function_str NRF_HAL_function_STR);
 NRF_ret_val_en NRF24_TxMode_EN (uint8_t *Address, uint8_t channel);
 NRF_ret_val_en NRF24_Transmit_EN(uint8_t *data_U8A, uint8_t size_data_U8);
 NRF_ret_val_en NRF24_RxMode_EN (uint8_t *Address, uint8_t channel);
-NRF_ret_val_en isDataAvailable_EN (uint8_t pipenum_U8);
+NRF_ret_val_en NRF24_isDataAvailable_EN (uint8_t pipenum_U8);
 NRF_ret_val_en NRF24_Receive_EN (uint8_t *data_U8A);
 void NRF24_ReadAll (uint8_t *data);
 
