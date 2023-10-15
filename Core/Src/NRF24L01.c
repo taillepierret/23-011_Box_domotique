@@ -375,7 +375,7 @@ NRF_ret_val_en NRF24_Transmit_EN(uint8_t *data_U8A, uint8_t size_data_U8)
 		return NRF_SIZE_BUFFER_TX_TOO_LARGE_EN;
 	}
 
-	uint8_t cmdtosend[12+1] = {0};
+	uint8_t cmdtosend[cSIZE_BUFFER_TX_MAX_U8+1] = {0};
 	NRF_ret_val_en NRF_ret_val_EN;
 	HAL_ret_val_en HAL_ret_val_EN;
 	uint8_t fifostatus = 0;
