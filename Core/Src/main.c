@@ -60,6 +60,7 @@ const static NRF_HAL_function_str NRF_HAL_function_local_STR =
 	.setIrq_PF = HAL_setIRQ,
 	.writeSpiValue_EN_PF = HAL_writeSpiValue_EN
 };
+//TODO pour un ack le payload semble ne pas etre bon ...
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -78,11 +79,11 @@ static void MX_SPI1_Init(void);
 #ifdef SERVEUR
 uint8_t my_addr = 69;
 uint8_t addr_dst = 14;
-TED_packet_un TED_packet_UN;
 #else
 uint8_t my_addr = 14;
 uint8_t addr_dst = 69;
 #endif
+TED_packet_un TED_packet_UN;
 
 /* USER CODE END 0 */
 
@@ -134,11 +135,20 @@ int main(void)
 	  {
 		  TED_receive_EN(&TED_packet_UN);
 		  print_rx_packet_with_string_payload(TED_packet_UN);
+		  if (TED_packet_UN.packet_STR.payload_U8A[0] == PING)
+		  {
+			  TED_ack_EN(TED_packet_UN.packet_STR.address_emetteur[0], TED_packet_UN.packet_STR.function_U5);
+		  }
 	  }
 #else
 	  //TED_init(my_addr, NRF_HAL_function_local_STR,true);
-	  TED_ping_EN(addr_dst);
+	  TED_ack_EN(addr_dst,PING);
 	  HAL_Delay(1000);
+	  if (TED_IsDataAvailable_B())
+	  {
+		  TED_receive_EN(&TED_packet_UN);
+		  print_rx_packet_with_string_payload(TED_packet_UN);
+	  }
 #endif
   }
   /* USER CODE END 3 */

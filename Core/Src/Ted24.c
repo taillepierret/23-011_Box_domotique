@@ -132,18 +132,18 @@ inline void print_rx_packet_with_string_payload(TED_packet_un TED_packet_UN)
 	print_string("\r\n");
 
 	print_string("Payload: ");
-	print_string(string);
+	print_uint32(TED_packet_UN.packet_STR.payload_U8A[0]);
 	print_string("\r\n");
 
 	print_string("CRC recu: ");
 	print_uint32(TED_packet_UN.packet_STR.crc8_Id_paquet_U8);
-	print_string("\r\n");
 	print_string("\r\n");
 
 	TED_packet_UN.packet_STR.crc8_Id_paquet_U8=0;
 
 	print_string("CRC calcule: ");
 	print_uint32(calculate_crc8_U8(TED_packet_UN.packet_U8A,cSIZE_BUFFER_TX_MAX_U8-1));
+	print_string("\r\n");
 	print_string("\r\n");
 }
 
@@ -160,5 +160,35 @@ inline TED_ret_val_en TED_receive_EN(TED_packet_un* TED_packet_UN)
 		return TED_OK_EN;
 	}
 }
+
+
+
+inline TED_ret_val_en TED_ack_EN(uint8_t address_dst_U8, TED_function_en function_to_ack_EN)
+{
+	TED_ret_val_en TED_ret_val_EN;
+	NRF_ret_val_en NRF_ret_val_EN;
+	uint8_t payload[cSIZE_PAYLOAD_U8] = {function_to_ack_EN};
+
+	NRF_ret_val_EN = NRF24_TxMode_EN(PipeAddress, 10);
+	if (NRF_ret_val_EN != NRF_OK_EN)
+	{
+		return TED_TX_MODE_UNAVAILABLE_EN;
+	}
+	TED_ret_val_EN = TED_send_packet_EN(address_dst_U8,ACK,payload);
+	if (TED_ret_val_EN != TED_OK_EN)
+	{
+		return TED_ret_val_EN;
+	}
+	NRF_ret_val_EN = NRF24_RxMode_EN(PipeAddress, 10);
+	if (NRF_ret_val_EN != NRF_OK_EN)
+	{
+		return TED_RX_MODE_UNAVAILABLE_EN;
+	}
+	else
+	{
+		return TED_OK_EN;
+	}
+}
+
 
 
