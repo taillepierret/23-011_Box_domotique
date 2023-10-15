@@ -35,7 +35,7 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-//#define SERVEUR
+#define SERVEUR
 #ifndef SERVEUR
 #define RX_MODE
 #endif
@@ -132,7 +132,7 @@ int main(void)
 #ifdef SERVEUR
 	  if (TED_IsDataAvailable_B())
 	  {
-		  TED_receive_EN(TED_packet_UN);
+		  TED_receive_EN(&TED_packet_UN);
 		  print_rx_packet_with_string_payload(TED_packet_UN);
 	  }
 #else

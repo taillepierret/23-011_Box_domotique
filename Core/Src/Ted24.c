@@ -32,7 +32,7 @@ TED_ret_val_en TED_init(uint8_t my_address_U8,NRF_HAL_function_str NRF_HAL_funct
 	{
 		return TED_NOT_INIT_EN;
 	}
-	NRF_ret_val_EN = NRF24_TxMode_EN(PipeAddress, 10);
+	NRF_ret_val_EN = NRF24_RxMode_EN(PipeAddress, 10);
 	if(NRF_ret_val_EN != NRF_OK_EN)
 	{
 		return TED_NOT_INIT_EN;
@@ -102,18 +102,19 @@ TED_ret_val_en TED_ping_EN(uint8_t address_dst_U8)
 
 inline void print_rx_packet_with_string_payload(TED_packet_un TED_packet_UN)
 {
-	char string[cSIZE_BUFFER_TX_MAX_U8-12] = "";
+	char string[cSIZE_BUFFER_TX_MAX_U8-12+1] = "";
 	for (uint8_t index_U8=0 ; index_U8<cSIZE_BUFFER_TX_MAX_U8-12 ; index_U8++)
 	{
 		string[index_U8] = TED_packet_UN.packet_STR.payload_U8A[index_U8];
 	}
 	print_string(string);
+	print_string("\r\n");
 }
 
-inline TED_ret_val_en TED_receive_EN(TED_packet_un TED_packet_UN)
+inline TED_ret_val_en TED_receive_EN(TED_packet_un* TED_packet_UN)
 {
 	NRF_ret_val_en NRF_ret_val_EN;
-	NRF_ret_val_EN = NRF24_Receive_EN(TED_packet_UN.packet_U8A);
+	NRF_ret_val_EN = NRF24_Receive_EN(TED_packet_UN->packet_U8A);
 	if (NRF_ret_val_EN != NRF_OK_EN)
 	{
 		return TED_RX_MODE_UNAVAILABLE_EN;
