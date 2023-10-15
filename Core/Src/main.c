@@ -25,6 +25,7 @@
 #include "hal.h"
 #include "tools.h"
 #include "Ted24.h"
+#include "NRF24L01.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -34,7 +35,7 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-#define SERVEUR
+//#define SERVEUR
 #ifndef SERVEUR
 #define RX_MODE
 #endif

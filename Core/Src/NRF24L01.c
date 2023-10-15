@@ -254,8 +254,6 @@ NRF_ret_val_en NRF24_Init_EN(NRF_HAL_function_str NRF_HAL_function_STR)
 
 	// disable the chip before configuring the device
 	NRF_HAL_function_local_STR.setCe_PF(false);
-	//CS_UnSelect();
-
 
 	// reset everything
 	NRF_ret_val_EN = nrf24_reset_EN(0);
@@ -391,13 +389,6 @@ NRF_ret_val_en NRF24_Transmit_EN(uint8_t *data_U8A, uint8_t size_data_U8)
 	{
 		return NRF_SPI_ERROR_EN;
 	}
-
-	// send the payload
-	/*HAL_ret_val_EN = HAL_writeSpiValue_EN(data_U8A, size_data_U8);
-	if(HAL_ret_val_EN != SPI_WRITE_OK_EN)
-	{
-		return NRF_SPI_ERROR_EN;
-	}*/
 
 	HAL_delay_ms(1);
 
