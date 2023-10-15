@@ -6,6 +6,6 @@
 ../Core/Src/NRF24L01.c:246:16:NRF24_Init_EN	9
 ../Core/Src/NRF24L01.c:319:16:NRF24_TxMode_EN	6
 ../Core/Src/NRF24L01.c:367:16:NRF24_Transmit_EN	9
-../Core/Src/NRF24L01.c:421:16:NRF24_RxMode_EN	10
-../Core/Src/NRF24L01.c:498:16:isDataAvailable_EN	6
-../Core/Src/NRF24L01.c:530:16:NRF24_Receive_EN	4
+../Core/Src/NRF24L01.c:424:16:NRF24_RxMode_EN	10
+../Core/Src/NRF24L01.c:501:16:isDataAvailable_EN	6
+../Core/Src/NRF24L01.c:533:16:NRF24_Receive_EN	4
