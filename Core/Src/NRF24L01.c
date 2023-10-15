@@ -242,15 +242,9 @@ static NRF_ret_val_en nrf24_reset_EN(NRF_register_REG reg)
 	return NRF_OK_EN;
 }
 
-
-NRF_ret_val_en NRF24_Init_EN(NRF_HAL_function_str NRF_HAL_function_STR)
+static NRF_ret_val_en NRF24_Init_registers_EN(void)
 {
 	NRF_ret_val_en NRF_ret_val_EN;
-
-	NRF_HAL_function_local_STR.readSpiValue_EN_PF = NRF_HAL_function_STR.readSpiValue_EN_PF;
-	NRF_HAL_function_local_STR.setCe_PF = NRF_HAL_function_STR.setCe_PF;
-	NRF_HAL_function_local_STR.setIrq_PF = NRF_HAL_function_STR.setIrq_PF;
-	NRF_HAL_function_local_STR.writeSpiValue_EN_PF = NRF_HAL_function_STR.writeSpiValue_EN_PF;
 
 	// disable the chip before configuring the device
 	NRF_HAL_function_local_STR.setCe_PF(false);
@@ -306,10 +300,26 @@ NRF_ret_val_en NRF24_Init_EN(NRF_HAL_function_str NRF_HAL_function_STR)
 
 	// Enable the chip after configuring the device
 	NRF_HAL_function_local_STR.setCe_PF(true);
+
+	return NRF_OK_EN;
+}
+
+
+NRF_ret_val_en NRF24_Init_EN(NRF_HAL_function_str NRF_HAL_function_STR)
+{
+	NRF_ret_val_en NRF_ret_val_EN;
+
+	NRF_HAL_function_local_STR.readSpiValue_EN_PF = NRF_HAL_function_STR.readSpiValue_EN_PF;
+	NRF_HAL_function_local_STR.setCe_PF = NRF_HAL_function_STR.setCe_PF;
+	NRF_HAL_function_local_STR.setIrq_PF = NRF_HAL_function_STR.setIrq_PF;
+	NRF_HAL_function_local_STR.writeSpiValue_EN_PF = NRF_HAL_function_STR.writeSpiValue_EN_PF;
+
+	NRF_ret_val_EN = NRF24_Init_registers_EN();
+
 	//CS_Select();
 	NRF_isInit_B = true;
 
-	return NRF_OK_EN;
+	return NRF_ret_val_EN;
 }
 
 
@@ -320,7 +330,14 @@ NRF_ret_val_en NRF24_TxMode_EN(uint8_t *Address_U8P, uint8_t channel_U8)
 	{
 		return NRF_NOT_INIT_EN;
 	}
+
 	NRF_ret_val_en NRF_ret_val_EN;
+
+	NRF_ret_val_EN = NRF24_Init_registers_EN();
+	if(NRF_ret_val_EN != NRF_OK_EN)
+	{
+		return NRF_ret_val_EN;
+	}
 
 	// disable the chip before configuring the device
 	NRF_HAL_function_local_STR.setCe_PF(false);
@@ -422,6 +439,12 @@ NRF_ret_val_en NRF24_RxMode_EN (uint8_t *Address_U8P, uint8_t channel_U8)
 	NRF_ret_val_en NRF_ret_val_EN;
 	uint8_t en_rxaddr = 0;
 	uint8_t config = 0;
+
+	NRF_ret_val_EN = NRF24_Init_registers_EN();
+	if(NRF_ret_val_EN != NRF_OK_EN)
+	{
+		return NRF_ret_val_EN;
+	}
 
 	// disable the chip before configuring the device
 	NRF_HAL_function_local_STR.setCe_PF(false);

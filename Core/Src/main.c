@@ -136,6 +136,7 @@ int main(void)
 		  print_rx_packet_with_string_payload(TED_packet_UN);
 	  }
 #else
+	  //TED_init(my_addr, NRF_HAL_function_local_STR,true);
 	  TED_ping_EN(addr_dst);
 	  HAL_Delay(1000);
 #endif

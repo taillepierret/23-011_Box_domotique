@@ -78,22 +78,22 @@ TED_ret_val_en TED_ping_EN(uint8_t address_dst_U8)
 			.packet_STR.payload_U8A = "Aurelie est si belle"
 	};
 
-	/*TED_packet_to_send_UN.packet_STR.crc8_Id_paquet_U8 = calculate_crc8_U8(TED_packet_to_send_UN.packet_U8A, cSIZE_BUFFER_TX_MAX_U8);
+	TED_packet_to_send_UN.packet_STR.crc8_Id_paquet_U8 = calculate_crc8_U8(TED_packet_to_send_UN.packet_U8A, cSIZE_BUFFER_TX_MAX_U8);
 	NRF_ret_val_EN = NRF24_TxMode_EN(PipeAddress, 10);
 	if (NRF_ret_val_EN != NRF_OK_EN)
 	{
 		return TED_TX_MODE_UNAVAILABLE_EN;
-	}*/
+	}
 	TED_ret_val_EN = TED_send_packet_EN(TED_packet_to_send_UN);
 	if (TED_ret_val_EN != TED_OK_EN)
 	{
 		return TED_ret_val_EN;
 	}
-	/*NRF_ret_val_EN = NRF24_RxMode_EN(PipeAddress, 10);
+	NRF_ret_val_EN = NRF24_RxMode_EN(PipeAddress, 10);
 	if (NRF_ret_val_EN != NRF_OK_EN)
 	{
 		return TED_RX_MODE_UNAVAILABLE_EN;
-	}*/
+	}
 	else
 	{
 		return TED_OK_EN;
