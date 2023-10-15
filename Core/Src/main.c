@@ -127,7 +127,7 @@ int main(void)
   uint8_t crc = calculate_crc8_U8(trame, trame_length);
   HAL_UART_Transmit(&huart2, &crc, 1, 1000);
 #ifdef RX_MODE
-  NRF24_RxMode(RxAddress, 10);
+  NRF24_RxMode_EN(RxAddress, 10);
 #else
   NRF24_TxMode_EN(TxAddress, 10);
 #endif

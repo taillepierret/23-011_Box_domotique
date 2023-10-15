@@ -375,25 +375,29 @@ NRF_ret_val_en NRF24_Transmit_EN(uint8_t *data_U8A, uint8_t size_data_U8)
 		return NRF_SIZE_BUFFER_TX_TOO_LARGE_EN;
 	}
 
-	uint8_t cmdtosend = 0;
+	uint8_t cmdtosend[12+1] = {0};
 	NRF_ret_val_en NRF_ret_val_EN;
 	HAL_ret_val_en HAL_ret_val_EN;
 	uint8_t fifostatus = 0;
 
 	// payload command
-	cmdtosend = W_TX_PAYLOAD_REG;
-	HAL_ret_val_EN = HAL_writeSpiValue_EN(&cmdtosend, 1);
+	cmdtosend[0] = W_TX_PAYLOAD_REG;
+	for (uint8_t index_U8=0 ; index_U8<size_data_U8 ; index_U8++)
+	{
+		cmdtosend[index_U8+1] = data_U8A[index_U8];
+	}
+	HAL_ret_val_EN = HAL_writeSpiValue_EN(cmdtosend, size_data_U8+1);
 	if(HAL_ret_val_EN != SPI_WRITE_OK_EN)
 	{
 		return NRF_SPI_ERROR_EN;
 	}
 
 	// send the payload
-	HAL_ret_val_EN = HAL_writeSpiValue_EN(data_U8A, size_data_U8);
+	/*HAL_ret_val_EN = HAL_writeSpiValue_EN(data_U8A, size_data_U8);
 	if(HAL_ret_val_EN != SPI_WRITE_OK_EN)
 	{
 		return NRF_SPI_ERROR_EN;
-	}
+	}*/
 
 	HAL_delay_ms(1);
 
@@ -406,8 +410,7 @@ NRF_ret_val_en NRF24_Transmit_EN(uint8_t *data_U8A, uint8_t size_data_U8)
 	// check the fourth bit of FIFO_STATUS to know if the TX fifo is empty
 	if ((fifostatus&(1<<4)) && (!(fifostatus&(1<<3))))
 	{
-		cmdtosend = FLUSH_TX_REG;
-		NRF_ret_val_EN = nrfsendCmd_EN(cmdtosend);
+		NRF_ret_val_EN = nrfsendCmd_EN(FLUSH_TX_REG);
 		if(NRF_ret_val_EN != NRF_OK_EN)
 		{
 			return NRF_ret_val_EN;
