@@ -35,7 +35,7 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-#define SERVEUR
+//#define SERVEUR
 #ifndef SERVEUR
 #define RX_MODE
 #endif

@@ -36,6 +36,7 @@ void HAL_setCE(bool state_B);
 void HAL_setIRQ(bool state_B);
 void HAL_delay_ms(uint32_t time_ms_U32);
 void print_string(char* string);
+void print_uint32(uint32_t number_U32);
 
 
 #endif /* INC_HAL_H_ */

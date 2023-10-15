@@ -8,6 +8,7 @@
 #include "hal.h"
 #include "main.h"
 #include <string.h>
+#include <stdio.h>
 
 extern SPI_HandleTypeDef hspi1;
 extern UART_HandleTypeDef huart2;
@@ -80,6 +81,13 @@ inline void HAL_delay_ms(uint32_t time_ms_U32)
 inline void print_string(char* string)
 {
 	 HAL_UART_Transmit(&huart2, (uint8_t*)string, strlen(string), 100);
+}
+
+inline void print_uint32(uint32_t number_U32)
+{
+	char buffer[10] = "";
+	snprintf(buffer, 10, "%lu", number_U32);
+	HAL_UART_Transmit(&huart2, (uint8_t*)buffer, 10, 100);
 }
 
 

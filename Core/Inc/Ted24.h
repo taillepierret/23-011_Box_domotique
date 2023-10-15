@@ -9,6 +9,9 @@
 #define INC_TED24_H_
 
 #include "NRF24L01.h"
+#include <stdint.h>
+
+#define cSIZE_PAYLOAD_U8 ((uint8_t)cSIZE_BUFFER_TX_MAX_U8-12)
 
 typedef enum
 {
@@ -26,9 +29,9 @@ typedef union
 		uint8_t ID_reseau_U4:4;
 	    uint8_t address_emetteur[8];
 	    uint8_t address_Destinataire;
-	    uint8_t nb_nodes_traversés_U3:3;
+	    uint8_t nb_nodes_traverses_U3:3;
 	    uint8_t function_U5:5;
-	    uint8_t payload_U8A[cSIZE_BUFFER_TX_MAX_U8-12];
+	    uint8_t payload_U8A[cSIZE_PAYLOAD_U8];
 	    uint8_t crc8_Id_paquet_U8;
 	} packet_STR;
     uint8_t packet_U8A[cSIZE_BUFFER_TX_MAX_U8];

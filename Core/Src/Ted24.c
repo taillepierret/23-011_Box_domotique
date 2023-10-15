@@ -51,9 +51,22 @@ inline bool TED_IsDataAvailable_B(void)
 	return NRF24_isDataAvailable_EN(1) == NRF_DATA_AVAILABLE_EN;
 }
 
-static inline TED_ret_val_en TED_send_packet_EN(TED_packet_un TED_packet_UN)
+static inline TED_ret_val_en TED_send_packet_EN(uint8_t addr_dst_U8, TED_function_en function_EN, uint8_t payload_U8A[cSIZE_PAYLOAD_U8])
 {
-	if (NRF24_Transmit_EN(TED_packet_UN.packet_U8A,cSIZE_BUFFER_TX_MAX_U8) != NRF_OK_EN)
+	TED_packet_un TED_packet_to_send_UN = {
+			.packet_STR.address_Destinataire = addr_dst_U8,
+			.packet_STR.address_emetteur[0] = local_TED_config_node_TED.my_address_U8,
+			.packet_STR.function_U5 = function_EN,
+			.packet_STR.nb_nodes_traverses_U3 = 0b000,
+			.packet_STR.crc8_Id_paquet_U8 = 0,
+			.packet_STR.ID_reseau_U4 = 0b1001,
+	};
+	for (uint8_t index_U8=0 ; index_U8<cSIZE_PAYLOAD_U8 ; index_U8++)
+	{
+		TED_packet_to_send_UN.packet_STR.payload_U8A[index_U8] = payload_U8A[index_U8];
+	}
+	TED_packet_to_send_UN.packet_STR.crc8_Id_paquet_U8 = calculate_crc8_U8(TED_packet_to_send_UN.packet_U8A, cSIZE_BUFFER_TX_MAX_U8-1);
+	if (NRF24_Transmit_EN(TED_packet_to_send_UN.packet_U8A,cSIZE_BUFFER_TX_MAX_U8) != NRF_OK_EN)
 	{
 		return TED_SEND_PACKET_NOT_OK_EN;
 	}
@@ -68,23 +81,14 @@ TED_ret_val_en TED_ping_EN(uint8_t address_dst_U8)
 {
 	TED_ret_val_en TED_ret_val_EN;
 	NRF_ret_val_en NRF_ret_val_EN;
-	TED_packet_un TED_packet_to_send_UN = {
-			.packet_STR.address_Destinataire = address_dst_U8,
-			.packet_STR.address_emetteur[0] = local_TED_config_node_TED.my_address_U8,
-			.packet_STR.function_U5 = PING,
-			.packet_STR.nb_nodes_traversés_U3 = 0b000,
-			.packet_STR.crc8_Id_paquet_U8 = 0,
-			.packet_STR.ID_reseau_U4 = 0b1001,
-			.packet_STR.payload_U8A = "Aurelie est si belle"
-	};
+	uint8_t payload[cSIZE_PAYLOAD_U8] = "Aurelie est si belle";
 
-	TED_packet_to_send_UN.packet_STR.crc8_Id_paquet_U8 = calculate_crc8_U8(TED_packet_to_send_UN.packet_U8A, cSIZE_BUFFER_TX_MAX_U8);
 	NRF_ret_val_EN = NRF24_TxMode_EN(PipeAddress, 10);
 	if (NRF_ret_val_EN != NRF_OK_EN)
 	{
 		return TED_TX_MODE_UNAVAILABLE_EN;
 	}
-	TED_ret_val_EN = TED_send_packet_EN(TED_packet_to_send_UN);
+	TED_ret_val_EN = TED_send_packet_EN(address_dst_U8,PING,payload);
 	if (TED_ret_val_EN != TED_OK_EN)
 	{
 		return TED_ret_val_EN;
@@ -107,7 +111,39 @@ inline void print_rx_packet_with_string_payload(TED_packet_un TED_packet_UN)
 	{
 		string[index_U8] = TED_packet_UN.packet_STR.payload_U8A[index_U8];
 	}
+	print_string("Version du reseau TED24: ");
+	print_uint32(TED_packet_UN.packet_STR.version_Ted24_U4);
+	print_string("\r\n");
+
+	print_string("ID du reseau TED24: ");
+	print_uint32(TED_packet_UN.packet_STR.ID_reseau_U4);
+	print_string("\r\n");
+
+	print_string("Adresse emetteur: ");
+	print_uint32(TED_packet_UN.packet_STR.address_emetteur[0]);
+	print_string("\r\n");
+
+	print_string("Adresse destinataire: ");
+	print_uint32(TED_packet_UN.packet_STR.address_Destinataire);
+	print_string("\r\n");
+
+	print_string("Fonction: ");
+	print_uint32(TED_packet_UN.packet_STR.function_U5);
+	print_string("\r\n");
+
+	print_string("Payload: ");
 	print_string(string);
+	print_string("\r\n");
+
+	print_string("CRC recu: ");
+	print_uint32(TED_packet_UN.packet_STR.crc8_Id_paquet_U8);
+	print_string("\r\n");
+	print_string("\r\n");
+
+	TED_packet_UN.packet_STR.crc8_Id_paquet_U8=0;
+
+	print_string("CRC calcule: ");
+	print_uint32(calculate_crc8_U8(TED_packet_UN.packet_U8A,cSIZE_BUFFER_TX_MAX_U8-1));
 	print_string("\r\n");
 }
 
