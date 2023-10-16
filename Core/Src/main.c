@@ -141,7 +141,6 @@ int main(void)
 		  }
 	  }
 #else
-	  //TED_init(my_addr, NRF_HAL_function_local_STR,true);
 	  TED_ack_EN(addr_dst,PING);
 	  HAL_Delay(1000);
 	  if (TED_IsDataAvailable_B())

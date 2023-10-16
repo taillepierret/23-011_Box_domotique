@@ -19,6 +19,9 @@ typedef enum
 	TED_SEND_PACKET_NOT_OK_EN,
 	TED_TX_MODE_UNAVAILABLE_EN,
 	TED_RX_MODE_UNAVAILABLE_EN,
+	TED_NO_TASK_RUNNING_EN,
+	TED_WRONG_TASK_EN,
+	TED_SENDING_STACK_OVERFLOW_EN,
 	TED_OK_EN
 }TED_ret_val_en;
 
@@ -38,12 +41,19 @@ typedef union
 }TED_packet_un;
 
 
-// /!\ jusqu'a 32 functions
+// /!\ jusqu'a 32 functions max
 typedef enum
 {
 	PING=0b00001,
 	ACK=0b00010
 }TED_function_en;
+
+typedef enum
+{
+	SENDING_PACKET_TASK,
+	WAITING_FOR_ACK_TASK,
+	NO_TASK
+}TED_task_en;
 
 
 bool TED_IsDataAvailable_B(void);

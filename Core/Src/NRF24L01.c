@@ -348,7 +348,7 @@ NRF_ret_val_en NRF24_TxMode_EN(uint8_t *Address_U8P, uint8_t channel_U8)
 		return NRF_ret_val_EN;
 	}
 
-	NRF_ret_val_EN = NRF_WriteReg_Multi_EN(TX_ADDR_REG, Address_U8P, 5);  // Write the TX address
+	NRF_ret_val_EN = NRF_WriteReg_Multi_EN(TX_ADDR_REG, (uint8_t *)Address_U8P, 5);  // Write the TX address
 	if(NRF_ret_val_EN != NRF_OK_EN)
 	{
 		return NRF_ret_val_EN;
