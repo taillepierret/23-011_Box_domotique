@@ -10,12 +10,17 @@
 //TODO faire une machine a etat pour l'envoie de commandes
 //TODO ajouter la verification que l'init est faite un peu partout sauf dans les fcts static
 //TODO historiser les problemes rencontrés
+//TODO faire la fonction millis()
+//TODO faire un compteur de paquets supprimés
+//TODO n'ajouter au la liste de paquets RX que les paquets qui nous sont destiné
 
 #include "Ted24.h"
 #include "tools.h"
 
 
-#define cSIZE_STACK_PACKET_TO_SEND 20
+#define cSIZE_STACK_PACKET_TO_SEND_U8 ((uint8_t) 20)
+#define cSIZE_STACK_PACKET_REVEIVED_U8 ((uint8_t) 20)
+#define cTIMEOUT_WAITING_FOR_ACK_ms_U32 ((uint32_t) 500)
 
 typedef struct
 {
@@ -26,9 +31,16 @@ typedef struct
 
 static const uint8_t PipeAddress[] = {0xEE,0xDD,0xCC,0xBB,0xAA};
 static TED_config_node_str local_TED_config_node_TED = {0};
-static TED_packet_un liste_de_paquets_a_envoyer_ENA[cSIZE_STACK_PACKET_TO_SEND] = {0};
+static TED_packet_un liste_de_paquets_a_envoyer_ENA[cSIZE_STACK_PACKET_TO_SEND_U8] = {0};
 static uint8_t counter_packet_sended_U8 = 0;
 static uint8_t counter_packet_added_U8 = 0;
+typedef struct{
+	TED_packet_un TED_packet_UN;
+	uint32_t received_time_ms_U32;
+}TED_Rx_packet_STR;
+static TED_Rx_packet_STR liste_de_paquets_recus_ENA[cSIZE_STACK_PACKET_REVEIVED_U8] = {0};
+static uint8_t counter_packet_treated_U8 = 0;
+static uint8_t counter_packet_received_U8 = 0;
 static TED_task_en tache_en_cours_EN = NO_TASK;
 
 TED_ret_val_en TED_init(uint8_t my_address_U8,NRF_HAL_function_str NRF_HAL_function_STR,bool flag_activating_low_power_mode_B)
@@ -76,7 +88,7 @@ static inline TED_ret_val_en TED_packet_to_send_EN(uint8_t addr_dst_U8, TED_func
 	counter_packet_added_U8++;
 
 	//gestion de la stack tournante
-	if (counter_packet_added_U8>=cSIZE_STACK_PACKET_TO_SEND)
+	if (counter_packet_added_U8>=cSIZE_STACK_PACKET_TO_SEND_U8)
 	{
 		counter_packet_added_U8 = 0;
 	}
@@ -86,7 +98,7 @@ static inline TED_ret_val_en TED_packet_to_send_EN(uint8_t addr_dst_U8, TED_func
 	{
 		if (counter_packet_added_U8 == 0)
 		{
-			counter_packet_added_U8 = cSIZE_STACK_PACKET_TO_SEND-1;
+			counter_packet_added_U8 = cSIZE_STACK_PACKET_TO_SEND_U8-1;
 		}
 		else
 		{
@@ -227,12 +239,12 @@ TED_ret_val_en TED_process (void)
 	switch (tache_en_cours_EN)
 	{
 		case SENDING_PACKET_TASK:
-			NRF_ret_val_EN = NRF24_Transmit_EN(liste_de_paquets_a_envoyer_ENA[counter_packet_sended_U8].packet_U8A,cSIZE_BUFFER_TX_MAX_U8); //envoie paquet TED24
 			counter_packet_sended_U8++;
-			if(counter_packet_sended_U8>=cSIZE_STACK_PACKET_TO_SEND)
+			if(counter_packet_sended_U8>=cSIZE_STACK_PACKET_TO_SEND_U8)
 			{
 				counter_packet_sended_U8 = 0;
 			}
+			NRF_ret_val_EN = NRF24_Transmit_EN(liste_de_paquets_a_envoyer_ENA[counter_packet_sended_U8].packet_U8A,cSIZE_BUFFER_TX_MAX_U8); //envoie paquet TED24
 			if (NRF_ret_val_EN != NRF_OK_EN)
 			{
 				return TED_SEND_PACKET_NOT_OK_EN;
@@ -242,12 +254,30 @@ TED_ret_val_en TED_process (void)
 				return TED_OK_EN;
 			}
 		case WAITING_FOR_ACK_TASK:
+			//TODO mettre un timeout si je ne recois pas de paquet
 		case NO_TASK:
 			return TED_NO_TASK_RUNNING_EN;
 		default:
 			return TED_WRONG_TASK_EN;
 
 	}
+}
+
+void TED_processRxPacket (void)
+{
+	if (TED_IsDataAvailable_B())
+	{
+		TED_packet_un TED_packet_UN;
+		TED_receive_EN(&TED_packet_UN);
+		print_rx_packet_with_string_payload(TED_packet_UN);
+		counter_packet_received_U8++;
+		for (uint8_t index_U8=0 ; index_U8<cSIZE_BUFFER_TX_MAX_U8 ; index_U8++)
+		{
+			liste_de_paquets_recus_ENA[counter_packet_received_U8].TED_packet_UN.packet_U8A[index_U8] = TED_packet_UN.packet_U8A[index_U8];
+			liste_de_paquets_recus_ENA[counter_packet_received_U8].received_time_ms_U32 = millis();
+		}
+	}
+
 }
 
 
