@@ -26,11 +26,17 @@ typedef struct
 {
 	uint8_t my_address_U8;
 	bool flag_activating_low_power_mode_B;
-	bool flag_node_is_init_B;;
+	bool flag_node_is_init_B;
+	uint8_t network_ID_U4:4;
+	uint8_t protocol_version_U4:4;
 }TED_config_node_str;
 
 static const uint8_t PipeAddress[] = {0xEE,0xDD,0xCC,0xBB,0xAA};
-static TED_config_node_str local_TED_config_node_TED = {0};
+static TED_config_node_str local_TED_config_node_TED = {.my_address_U8 = 0,
+														.flag_activating_low_power_mode_B = false,
+														.flag_node_is_init_B = false,
+														.network_ID_U4 = 0,
+														.protocol_version_U4 = cPROTOCOL_VERSION_U8};
 static TED_packet_un liste_de_paquets_a_envoyer_ENA[cSIZE_STACK_PACKET_TO_SEND_U8] = {0};
 static uint8_t counter_packet_sended_U8 = 0;
 static uint8_t counter_packet_added_U8 = 0;
@@ -43,8 +49,9 @@ static uint8_t counter_packet_treated_U8 = 0;
 static uint8_t counter_packet_received_U8 = 0;
 static TED_task_en tache_en_cours_EN = NO_TASK;
 
-TED_ret_val_en TED_init(uint8_t my_address_U8,NRF_HAL_function_str NRF_HAL_function_STR,bool flag_activating_low_power_mode_B)
+TED_ret_val_en TED_init(uint8_t my_address_U8,uint8_t ID_network_U8,NRF_HAL_function_str NRF_HAL_function_STR,bool flag_activating_low_power_mode_B)
 {
+	//TODO verifier que ID_network_U8 ne depasse pas 4bits
 	NRF_ret_val_en NRF_ret_val_EN;
 	NRF_ret_val_EN = NRF24_Init_EN(NRF_HAL_function_STR);
 	if(NRF_ret_val_EN != NRF_OK_EN)
@@ -61,6 +68,7 @@ TED_ret_val_en TED_init(uint8_t my_address_U8,NRF_HAL_function_str NRF_HAL_funct
 		local_TED_config_node_TED.my_address_U8 = my_address_U8;
 		local_TED_config_node_TED.flag_activating_low_power_mode_B = flag_activating_low_power_mode_B;
 		local_TED_config_node_TED.flag_node_is_init_B = true;
+		local_TED_config_node_TED.network_ID_U4 = ID_network_U8;
 		return TED_OK_EN;
 	}
 }
@@ -73,8 +81,8 @@ inline bool TED_IsDataAvailable_B(void)
 static inline TED_ret_val_en TED_packet_to_send_EN(uint8_t addr_dst_U8, TED_function_en function_EN, uint8_t payload_U8A[cSIZE_PAYLOAD_U8])
 {
 	TED_packet_un TED_packet_to_send_UN = {
-			.packet_STR.address_Destinataire = addr_dst_U8,
-			.packet_STR.address_emetteur[0] = local_TED_config_node_TED.my_address_U8,
+			.packet_STR.address_Destinataire_U8 = addr_dst_U8,
+			.packet_STR.address_emetteur_U8A[0] = local_TED_config_node_TED.my_address_U8,
 			.packet_STR.function_U5 = function_EN,
 			.packet_STR.nb_nodes_traverses_U3 = 0b000,
 			.packet_STR.crc8_Id_paquet_U8 = 0,
@@ -159,11 +167,11 @@ inline void print_rx_packet_with_string_payload(TED_packet_un TED_packet_UN)
 	print_string("\r\n");
 
 	print_string("Adresse emetteur: ");
-	print_uint32(TED_packet_UN.packet_STR.address_emetteur[0]);
+	print_uint32(TED_packet_UN.packet_STR.address_emetteur_U8A[0]);
 	print_string("\r\n");
 
 	print_string("Adresse destinataire: ");
-	print_uint32(TED_packet_UN.packet_STR.address_Destinataire);
+	print_uint32(TED_packet_UN.packet_STR.address_Destinataire_U8);
 	print_string("\r\n");
 
 	print_string("Fonction: ");
@@ -263,18 +271,45 @@ TED_ret_val_en TED_process (void)
 	}
 }
 
+TED_ret_val_en IsPacketForMe_B (TED_packet_un TED_packet_UN)
+{
+	if (TED_packet_UN.packet_STR.ID_reseau_U4 == local_TED_config_node_TED.network_ID_U4)
+	{
+		return TED_WRONG_NETWORK_ID_EN;
+	}
+	else if (TED_packet_UN.packet_STR.address_Destinataire_U8 == local_TED_config_node_TED.my_address_U8)
+	{
+		return TED_WRONG_DST_ADR_EN;
+	}
+	else if (TED_packet_UN.packet_STR.crc8_Id_paquet_U8 == calculate_crc8_U8(TED_packet_UN.packet_U8A,cSIZE_BUFFER_TX_MAX_U8-1))
+	{
+		return TED_WRONG_CRC_EN;
+	}
+	else if (TED_packet_UN.packet_STR.version_Ted24_U4 == local_TED_config_node_TED.protocol_version_U4)
+	{
+		return TED_WRONG_PROTOCOL_VERSION_EN;
+	}
+	else
+	{
+		return TED_OK_EN;
+	}
+}
+
 void TED_processRxPacket (void)
 {
 	if (TED_IsDataAvailable_B())
 	{
-		TED_packet_un TED_packet_UN;
-		TED_receive_EN(&TED_packet_UN);
-		print_rx_packet_with_string_payload(TED_packet_UN);
-		counter_packet_received_U8++;
-		for (uint8_t index_U8=0 ; index_U8<cSIZE_BUFFER_TX_MAX_U8 ; index_U8++)
+		TED_packet_un TED_Rx_packet_UN;
+		TED_receive_EN(&TED_Rx_packet_UN);
+		print_rx_packet_with_string_payload(TED_Rx_packet_UN);
+		if(IsPacketForMe_B(TED_Rx_packet_UN) == TED_OK_EN)
 		{
-			liste_de_paquets_recus_ENA[counter_packet_received_U8].TED_packet_UN.packet_U8A[index_U8] = TED_packet_UN.packet_U8A[index_U8];
-			liste_de_paquets_recus_ENA[counter_packet_received_U8].received_time_ms_U32 = millis();
+			counter_packet_received_U8++;
+			for (uint8_t index_U8=0 ; index_U8<cSIZE_BUFFER_TX_MAX_U8 ; index_U8++)
+			{
+				liste_de_paquets_recus_ENA[counter_packet_received_U8].TED_packet_UN.packet_U8A[index_U8] = TED_Rx_packet_UN.packet_U8A[index_U8];
+			}
+			liste_de_paquets_recus_ENA[counter_packet_received_U8].received_time_ms_U32 = HAL_millis_U32();
 		}
 	}
 

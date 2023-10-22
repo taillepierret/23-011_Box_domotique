@@ -26,6 +26,7 @@
 #include "tools.h"
 #include "Ted24.h"
 #include "NRF24L01.h"
+#include "configuration.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -119,7 +120,7 @@ int main(void)
   MX_USART2_UART_Init();
   MX_SPI1_Init();
   /* USER CODE BEGIN 2 */
-  TED_init(my_addr, NRF_HAL_function_local_STR,true);
+  TED_init(my_addr, cNETWORK_ID_U8, NRF_HAL_function_local_STR,true);
   //NRF24_ReadAll(data);
   /* USER CODE END 2 */
 
