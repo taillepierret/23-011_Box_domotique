@@ -302,7 +302,7 @@ TED_ret_val_en IsPacketForMe_B (TED_packet_un TED_packet_UN)
 
 void TED_processRxPacket (void)
 {
-	if (TED_IsDataAvailable_B())
+	if (TED_IsDataAvailable_B())//on a recu un paquet, il faut le stocker dans la stack
 	{
 		TED_packet_un TED_Rx_packet_UN;
 		TED_receive_EN(&TED_Rx_packet_UN);
@@ -323,12 +323,11 @@ void TED_processRxPacket (void)
 		}
 		//else if c'est un paquet a renvoyer
 	}
-	else if (counter_packet_received_U8 != counter_packet_treated_U8)
+	else if (counter_packet_received_U8 != counter_packet_treated_U8) //Il y a un paquet a traiter
 	{
 		counter_packet_treated_U8++;
-		//TODO fonction de traitement des commandes recues
+		TED_treatRxPacket(liste_de_paquets_recus_ENA[counter_packet_treated_U8]);
 	}
-	//else if il y a un paquet a traiter
 	else
 	{
 		return;
