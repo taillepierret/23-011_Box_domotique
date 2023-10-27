@@ -132,24 +132,11 @@ int main(void)
 
     /* USER CODE BEGIN 3 */
 #ifdef SERVEUR
-	  if (TED_IsDataAvailable_B())
-	  {
-		  TED_receive_EN(&TED_packet_UN);
-		  print_rx_packet_with_string_payload(TED_packet_UN);
-		  if (TED_packet_UN.packet_STR.payload_U8A[0] == PING)
-		  {
-			  TED_ack_EN(TED_packet_UN.packet_STR.address_emetteur[0], TED_packet_UN.packet_STR.function_U5);
-		  }
-	  }
 #else
-	  TED_ack_EN(addr_dst,PING);
+	  TED_ping_EN(addr_dst);
 	  HAL_Delay(1000);
-	  if (TED_IsDataAvailable_B())
-	  {
-		  TED_receive_EN(&TED_packet_UN);
-		  print_rx_packet_with_string_payload(TED_packet_UN);
-	  }
 #endif
+	  Ted_Process();
   }
   /* USER CODE END 3 */
 }

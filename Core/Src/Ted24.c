@@ -52,6 +52,9 @@ static uint8_t counter_packet_received_U8 = 0;
 static uint8_t counter_packet_treated_U8 = 0;
 static TED_task_en tache_en_cours_EN = NO_TASK;
 
+//----------------------------------------------------- local functions -----------------------------------------------------
+static TED_ret_val_en TED_treatRxPacket(TED_packet_un TED_packet_UN);
+
 TED_ret_val_en TED_init(uint8_t my_address_U8,uint8_t ID_network_U8,NRF_HAL_function_str NRF_HAL_function_STR,bool flag_activating_low_power_mode_B)
 {
 	//TODO verifier que ID_network_U8 ne depasse pas 4bits
@@ -326,7 +329,8 @@ void TED_processRxPacket (void)
 	else if (counter_packet_received_U8 != counter_packet_treated_U8) //Il y a un paquet a traiter
 	{
 		counter_packet_treated_U8++;
-		TED_treatRxPacket(liste_de_paquets_recus_ENA[counter_packet_treated_U8]);
+		TED_treatRxPacket(liste_de_paquets_recus_ENA[counter_packet_treated_U8].TED_packet_UN);//TODO traiter la valeur de retour ?
+		//TODO gerer le temps de reception du ACK (timeout ?)
 	}
 	else
 	{
@@ -342,7 +346,7 @@ void Ted_Process(void)
 }
 
 
-TED_ret_val_en TED_treatRxPacket(TED_packet_un TED_packet_UN)
+static TED_ret_val_en TED_treatRxPacket(TED_packet_un TED_packet_UN)
 {
 	switch(TED_packet_UN.packet_STR.function_U5)
 	{
