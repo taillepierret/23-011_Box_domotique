@@ -13,6 +13,7 @@
 //TODO faire la fonction millis()
 //TODO faire un compteur de paquets supprimés
 //TODO n'ajouter au la liste de paquets RX que les paquets qui nous sont destiné
+//TODO enregistrer tous les logs dans l'EEPROM et afficher une led rouge quadn l'EEPROM est full, faire une commande pour envoyer les logs en debug et en faire une autre pour tout flusher
 
 #include "Ted24.h"
 #include "tools.h"
@@ -45,8 +46,10 @@ typedef struct{
 	uint32_t received_time_ms_U32;
 }TED_Rx_packet_STR;
 static TED_Rx_packet_STR liste_de_paquets_recus_ENA[cSIZE_STACK_PACKET_REVEIVED_U8] = {0};
-static uint8_t counter_packet_treated_U8 = 0;
+
+
 static uint8_t counter_packet_received_U8 = 0;
+static uint8_t counter_packet_treated_U8 = 0;
 static TED_task_en tache_en_cours_EN = NO_TASK;
 
 TED_ret_val_en TED_init(uint8_t my_address_U8,uint8_t ID_network_U8,NRF_HAL_function_str NRF_HAL_function_STR,bool flag_activating_low_power_mode_B)
@@ -212,6 +215,7 @@ inline TED_ret_val_en TED_receive_EN(TED_packet_un* TED_packet_UN)
 
 inline TED_ret_val_en TED_ack_EN(uint8_t address_dst_U8, TED_function_en function_to_ack_EN)
 {
+	//TODO renvoyer dans le payload toutes les adresses par lesquelles le paquet a ack est passe
 	TED_ret_val_en TED_ret_val_EN;
 	NRF_ret_val_en NRF_ret_val_EN;
 	uint8_t payload[cSIZE_PAYLOAD_U8] = {function_to_ack_EN};
@@ -237,7 +241,7 @@ inline TED_ret_val_en TED_ack_EN(uint8_t address_dst_U8, TED_function_en functio
 	}
 }
 
-TED_ret_val_en TED_process (void)
+TED_ret_val_en TED_processTxPacket (void)
 {
 	NRF_ret_val_en NRF_ret_val_EN;
 	if(tache_en_cours_EN == NO_TASK && counter_packet_sended_U8 != counter_packet_added_U8)
@@ -289,6 +293,7 @@ TED_ret_val_en IsPacketForMe_B (TED_packet_un TED_packet_UN)
 	{
 		return TED_WRONG_PROTOCOL_VERSION_EN;
 	}
+	//TODO else if le paquet est deja recu
 	else
 	{
 		return TED_OK_EN;
@@ -305,14 +310,56 @@ void TED_processRxPacket (void)
 		if(IsPacketForMe_B(TED_Rx_packet_UN) == TED_OK_EN)
 		{
 			counter_packet_received_U8++;
+			if (counter_packet_received_U8>=cSIZE_STACK_PACKET_REVEIVED_U8)
+			{
+				counter_packet_received_U8 = 0;
+			}
+			//TODO loguer si jamais on ecrit sur un paquet non traité
 			for (uint8_t index_U8=0 ; index_U8<cSIZE_BUFFER_TX_MAX_U8 ; index_U8++)
 			{
 				liste_de_paquets_recus_ENA[counter_packet_received_U8].TED_packet_UN.packet_U8A[index_U8] = TED_Rx_packet_UN.packet_U8A[index_U8];
 			}
 			liste_de_paquets_recus_ENA[counter_packet_received_U8].received_time_ms_U32 = HAL_millis_U32();
 		}
+		//else if c'est un paquet a renvoyer
+	}
+	else if (counter_packet_received_U8 != counter_packet_treated_U8)
+	{
+		counter_packet_treated_U8++;
+		//TODO fonction de traitement des commandes recues
+	}
+	//else if il y a un paquet a traiter
+	else
+	{
+		return;
 	}
 
+}
+
+void Ted_Process(void)
+{
+	TED_processRxPacket();
+	TED_processTxPacket();
+}
+
+
+TED_ret_val_en TED_treatRxPacket(TED_packet_un TED_packet_UN)
+{
+	switch(TED_packet_UN.packet_STR.function_U5)
+	{
+		case PING:
+			TED_ack_EN(TED_packet_UN.packet_STR.address_emetteur_U8A[0], PING);
+			break;
+
+		case ACK:
+			print_rx_packet_with_string_payload(TED_packet_UN);
+			//TODO gerer l'ack
+			break;
+		default:
+			//TODO afficher en debug que la fonction n'a pas ete reconnue
+			return TED_COMMAND_NOT_FOUND_EN;
+	}
+	return TED_OK_EN;
 }
 
 

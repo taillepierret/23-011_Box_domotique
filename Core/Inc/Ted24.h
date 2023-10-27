@@ -30,6 +30,7 @@ typedef enum
 	TED_WRONG_DST_ADR_EN,
 	TED_WRONG_CRC_EN,
 	TED_WRONG_PROTOCOL_VERSION_EN,
+	TED_COMMAND_NOT_FOUND_EN,
 	TED_OK_EN
 }TED_ret_val_en;
 
@@ -39,11 +40,11 @@ typedef union
 	struct packet_str {
 		uint8_t version_Ted24_U4:4;
 		uint8_t ID_reseau_U4:4;
-	    uint8_t address_emetteur_U8A[8];
 	    uint8_t address_Destinataire_U8;
 	    uint8_t nb_nodes_traverses_U3:3;
 	    uint8_t function_U5:5;
 	    uint8_t payload_U8A[cSIZE_PAYLOAD_U8];
+	    uint8_t address_emetteur_U8A[8]; //TODO /!\ le crc se calcul sans le crc ni les adresses emettrices
 	    uint8_t crc8_Id_paquet_U8;
 	} packet_STR;
     uint8_t packet_U8A[cSIZE_BUFFER_TX_MAX_U8];
@@ -71,6 +72,7 @@ TED_ret_val_en TED_init(uint8_t my_address_U8,uint8_t ID_network_U8,NRF_HAL_func
 TED_ret_val_en TED_receive_EN(TED_packet_un* TED_packet_UN);
 void print_rx_packet_with_string_payload(TED_packet_un TED_packet_UN);
 TED_ret_val_en TED_ack_EN(uint8_t address_dst_U8, TED_function_en function_to_ack_EN);
+void Ted_Process(void);
 
 
 
