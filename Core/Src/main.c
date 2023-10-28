@@ -27,6 +27,7 @@
 #include "Ted24.h"
 #include "NRF24L01.h"
 #include "configuration.h"
+#include "debug.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -36,7 +37,7 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-//#define SERVEUR
+#define SERVEUR
 #ifndef SERVEUR
 #define RX_MODE
 #endif
@@ -120,8 +121,16 @@ int main(void)
   MX_USART2_UART_Init();
   MX_SPI1_Init();
   /* USER CODE BEGIN 2 */
+  DBG_setLogLevel(VERBOSE_EN);
   TED_init(my_addr, cNETWORK_ID_U8, NRF_HAL_function_local_STR,true);
-  //NRF24_ReadAll(data);
+#ifndef SERVEUR
+	TED_ping_EN(addr_dst);
+	TED_ping_EN(addr_dst);
+	TED_ping_EN(addr_dst);
+	TED_ping_EN(addr_dst);
+	TED_ping_EN(addr_dst);
+	TED_ping_EN(addr_dst);
+#endif
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -131,11 +140,6 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-#ifdef SERVEUR
-#else
-	  TED_ping_EN(addr_dst);
-	  HAL_Delay(1000);
-#endif
 	  Ted_Process();
   }
   /* USER CODE END 3 */

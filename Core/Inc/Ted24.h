@@ -31,6 +31,10 @@ typedef enum
 	TED_WRONG_CRC_EN,
 	TED_WRONG_PROTOCOL_VERSION_EN,
 	TED_COMMAND_NOT_FOUND_EN,
+	TED_ACK_IS_RECEIVED,
+	TED_TIMEOUT_ACK_IS_NOT_RECEIVED,
+	TED_WAITING_FOR_ACK,
+	TED_ACK_RECEIVED_NOT_CORRESPONDING_TO_ACTUAL_TX_PACKET,
 	TED_OK_EN
 }TED_ret_val_en;
 
@@ -71,7 +75,7 @@ TED_ret_val_en TED_ping_EN(uint8_t address_dst_U8);
 TED_ret_val_en TED_init(uint8_t my_address_U8,uint8_t ID_network_U8,NRF_HAL_function_str NRF_HAL_function_STR,bool flag_activating_low_power_mode_B);
 TED_ret_val_en TED_receive_EN(TED_packet_un* TED_packet_UN);
 void print_rx_packet_with_string_payload(TED_packet_un TED_packet_UN);
-TED_ret_val_en TED_ack_EN(uint8_t address_dst_U8, TED_function_en function_to_ack_EN);
+TED_ret_val_en TED_ack_EN(uint8_t address_dst_U8, TED_function_en function_to_ack_EN, uint8_t Id_packet_to_ack);
 void Ted_Process(void);
 
 
