@@ -300,7 +300,7 @@ TED_ret_val_en TED_processTxPacket (void)
 					tache_en_cours_EN = WAITING_FOR_ACK_TASK;
 				}
 				else
-				{
+				{    // le paquet d'ack n'attend pas d'ack
 					liste_de_paquets_a_envoyer_ENA[counter_packet_sended_U8].begin_waiting_ack_time_ms_U32 = 0;
 					liste_de_paquets_a_envoyer_ENA[counter_packet_sended_U8].flag_is_waiting_for_ack = false;
 					tache_en_cours_EN = NO_TASK;
