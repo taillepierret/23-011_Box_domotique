@@ -19,6 +19,7 @@ typedef enum
 {
 	TED_NOT_INIT_EN,
 	TED_SEND_PACKET_NOT_OK_EN,
+	TED_SEND_PACKET_OK_EN,
 	TED_TX_MODE_UNAVAILABLE_EN,
 	TED_RX_MODE_UNAVAILABLE_EN,
 	TED_NO_TASK_RUNNING_EN,
@@ -37,6 +38,7 @@ typedef enum
 	TED_ACK_RECEIVED_NOT_CORRESPONDING_TO_ACTUAL_TX_PACKET,
 	TED_NUMBER_OF_RETRY_TOO_BIG_EN,
 	TED_RETRY_EN,
+	TED_READING_PACKET_NOT_POSSIBLE_EN,
 	TED_OK_EN
 }TED_ret_val_en;
 
@@ -50,7 +52,7 @@ typedef union
 	    uint8_t nb_nodes_traverses_U3:3;
 	    uint8_t function_U5:5;
 	    uint8_t payload_U8A[cSIZE_PAYLOAD_U8];
-	    uint8_t address_emetteur_U8A[8]; //TODO /!\ le crc se calcul sans le crc ni les adresses emettrices
+	    uint8_t address_emetteur_U8A[8]; // /!\ le crc se calcul sans le crc ni les adresses emettrices
 	    uint8_t crc8_Id_paquet_U8;
 	} packet_STR;
     uint8_t packet_U8A[cSIZE_BUFFER_TX_MAX_U8];
@@ -73,13 +75,10 @@ typedef enum
 }TED_task_en;
 
 
-bool TED_IsDataAvailable_B(void);
-TED_ret_val_en TED_ping_EN(uint8_t address_dst_U8);
-TED_ret_val_en TED_init(uint8_t my_address_U8,uint8_t ID_network_U8,NRF_HAL_function_str NRF_HAL_function_STR,bool flag_activating_low_power_mode_B);
-TED_ret_val_en TED_receive_EN(TED_packet_un* TED_packet_UN);
-void print_rx_packet_with_string_payload(TED_packet_un TED_packet_UN);
-TED_ret_val_en TED_ack_EN(uint8_t address_dst_U8, TED_function_en function_to_ack_EN, uint8_t Id_packet_to_ack);
 void Ted_Process(void);
+TED_ret_val_en TED_ping_EN(uint8_t address_dst_U8);
+bool TED_IsDataAvailable_B(void);
+TED_ret_val_en TED_init(uint8_t my_address_U8,uint8_t ID_network_U8,NRF_HAL_function_str NRF_HAL_function_STR,bool flag_activating_low_power_mode_B);
 
 
 

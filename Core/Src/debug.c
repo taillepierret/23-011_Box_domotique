@@ -8,7 +8,7 @@
 
 #include "debug.h"
 #include "hal.h"
-
+//TODO ajouter les fonction de debug UART
 DBG_log_level_en local_DBG_log_level_EN = ERROR_EN;
 
 inline void DBG_setLogLevel(DBG_log_level_en DBG_log_level_EN)
