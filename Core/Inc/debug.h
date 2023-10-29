@@ -17,6 +17,13 @@ typedef enum
 	ERROR_EN   = 2
 }DBG_log_level_en;
 
+typedef enum
+{
+	DBG_OK_EN,
+	DBG_PACKET_RX_GOOD_EN,
+	DBG_PACKET_RX_NOT_GOOD_EN
+}DBG_ret_val_en;
+
 void DBG_printString(char* log_CA,DBG_log_level_en DBG_log_level_EN);
 void DBG_printUint32_t(uint32_t number_U32,DBG_log_level_en DBG_log_level_EN);
 void DBG_setLogLevel(DBG_log_level_en DBG_log_level_EN);

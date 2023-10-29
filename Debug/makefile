@@ -34,34 +34,34 @@ $(wildcard ../makefile.init) \
 $(wildcard ../makefile.targets) \
 
 
-BUILD_ARTIFACT_NAME := 23-011_Box_domotique_Firmware
+BUILD_ARTIFACT_NAME := 23-009_Box_domotique_Firmware
 BUILD_ARTIFACT_EXTENSION := elf
 BUILD_ARTIFACT_PREFIX :=
 BUILD_ARTIFACT := $(BUILD_ARTIFACT_PREFIX)$(BUILD_ARTIFACT_NAME)$(if $(BUILD_ARTIFACT_EXTENSION),.$(BUILD_ARTIFACT_EXTENSION),)
 
 # Add inputs and outputs from these tool invocations to the build variables 
 EXECUTABLES += \
-23-011_Box_domotique_Firmware.elf \
+23-009_Box_domotique_Firmware.elf \
 
 MAP_FILES += \
-23-011_Box_domotique_Firmware.map \
+23-009_Box_domotique_Firmware.map \
 
 SIZE_OUTPUT += \
 default.size.stdout \
 
 OBJDUMP_LIST += \
-23-011_Box_domotique_Firmware.list \
+23-009_Box_domotique_Firmware.list \
 
 
 # All Target
 all: main-build
 
 # Main-build Target
-main-build: 23-011_Box_domotique_Firmware.elf secondary-outputs
+main-build: 23-009_Box_domotique_Firmware.elf secondary-outputs
 
 # Tool invocations
-23-011_Box_domotique_Firmware.elf 23-011_Box_domotique_Firmware.map: $(OBJS) $(USER_OBJS) C:\Projets\23-011_Box_domotique\02_Firmware\23-011_Box_domotique_Firmware\STM32L010C6TX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-gcc -o "23-011_Box_domotique_Firmware.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m0plus -T"C:\Projets\23-011_Box_domotique\02_Firmware\23-011_Box_domotique_Firmware\STM32L010C6TX_FLASH.ld" --specs=nosys.specs -Wl,-Map="23-011_Box_domotique_Firmware.map" -Wl,--gc-sections -static --specs=nano.specs -mfloat-abi=soft -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+23-009_Box_domotique_Firmware.elf 23-009_Box_domotique_Firmware.map: $(OBJS) $(USER_OBJS) C:\Projets\23-011_Box_domotique\02_Firmware\23-011_Box_domotique_Firmware\STM32L010C6TX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-gcc -o "23-009_Box_domotique_Firmware.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m0plus -T"C:\Projets\23-011_Box_domotique\02_Firmware\23-011_Box_domotique_Firmware\STM32L010C6TX_FLASH.ld" --specs=nosys.specs -Wl,-Map="23-009_Box_domotique_Firmware.map" -Wl,--gc-sections -static --specs=nano.specs -mfloat-abi=soft -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
 
@@ -70,14 +70,14 @@ default.size.stdout: $(EXECUTABLES) makefile objects.list $(OPTIONAL_TOOL_DEPS)
 	@echo 'Finished building: $@'
 	@echo ' '
 
-23-011_Box_domotique_Firmware.list: $(EXECUTABLES) makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-objdump -h -S $(EXECUTABLES) > "23-011_Box_domotique_Firmware.list"
+23-009_Box_domotique_Firmware.list: $(EXECUTABLES) makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-objdump -h -S $(EXECUTABLES) > "23-009_Box_domotique_Firmware.list"
 	@echo 'Finished building: $@'
 	@echo ' '
 
 # Other Targets
 clean:
-	-$(RM) 23-011_Box_domotique_Firmware.elf 23-011_Box_domotique_Firmware.list 23-011_Box_domotique_Firmware.map default.size.stdout
+	-$(RM) 23-009_Box_domotique_Firmware.elf 23-009_Box_domotique_Firmware.list 23-009_Box_domotique_Firmware.map default.size.stdout
 	-@echo ' '
 
 secondary-outputs: $(SIZE_OUTPUT) $(OBJDUMP_LIST)

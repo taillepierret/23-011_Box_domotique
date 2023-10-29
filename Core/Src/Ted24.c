@@ -39,7 +39,7 @@ typedef struct{
 	TED_packet_un TED_packet_UN;
 	bool flag_is_waiting_for_ack;
 	uint32_t begin_waiting_ack_time_ms_U32; //correspond au temps ou le paquet a ete envoye
-	uint32_t time_ack_is_received_ms_U32;  //correspond au temps ou le ACK est recu
+	uint16_t time_ack_is_received_ms_U32;  //correspond au temps ou le ACK est recu
 	bool is_ack_rx;
 	uint8_t counter_retry_sending_U8;
 }TED_Tx_packet_STR;
