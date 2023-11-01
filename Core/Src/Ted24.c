@@ -32,14 +32,14 @@ typedef struct{
 
 typedef struct{
 	TED_packet_un TED_packet_UN;
-	uint32_t received_time_ms_U32;
+	//uint32_t received_time_ms_U32;
 }TED_Rx_packet_STR;
 
 typedef struct{
 	TED_packet_un TED_packet_UN;
 	bool flag_is_waiting_for_ack;
 	uint32_t begin_waiting_ack_time_ms_U32; //correspond au temps ou le paquet a ete envoye
-	uint16_t time_ack_is_received_ms_U32;  //correspond au temps ou le ACK est recu
+	//uint16_t time_ack_is_received_ms_U32;  //correspond au temps ou le ACK est recu
 	bool is_ack_rx;
 	uint8_t counter_retry_sending_U8;
 }TED_Tx_packet_STR;
@@ -85,9 +85,9 @@ static uint8_t counter_packet_treated_U8 = 0;
 
 static TED_task_en tache_en_cours_EN = NO_TASK;
 
-uint8_t counter_packet_error_U8 = 0;
+static uint8_t counter_packet_error_U8 = 0;
 
-TED_error_code_str stack_error_STRA[cSIZE_STACK_ERROR_U8] = {0};
+//static TED_error_code_str stack_error_STRA[cSIZE_STACK_ERROR_U8] = {0};
 
 
 //----------------------------------------------------------------------------------------------------------------------------
@@ -284,7 +284,7 @@ static TED_ret_val_en TED_processTxPacket (void)
 			if (liste_de_paquets_a_envoyer_ENA[counter_packet_sended_U8].is_ack_rx == true) //ACK recu
 			{
 				tache_en_cours_EN = NO_TASK;
-				liste_de_paquets_a_envoyer_ENA[counter_packet_sended_U8].time_ack_is_received_ms_U32 = HAL_millis_U32()-liste_de_paquets_a_envoyer_ENA[counter_packet_sended_U8].begin_waiting_ack_time_ms_U32;
+				//liste_de_paquets_a_envoyer_ENA[counter_packet_sended_U8].time_ack_is_received_ms_U32 = HAL_millis_U32()-liste_de_paquets_a_envoyer_ENA[counter_packet_sended_U8].begin_waiting_ack_time_ms_U32;
 				return TED_ACK_IS_RECEIVED;
 			}
 			else if (HAL_millis_U32()-liste_de_paquets_a_envoyer_ENA[counter_packet_sended_U8].begin_waiting_ack_time_ms_U32 > cWAITING_TIMEOUT_ACK_ms_U32) //Timeout, ack non recu
@@ -295,8 +295,7 @@ static TED_ret_val_en TED_processTxPacket (void)
 				//stack_error_STRA.localisation_code_U8 = 2;
 				tache_en_cours_EN = RETRY_SENDING_TASK;
 				liste_de_paquets_a_envoyer_ENA[counter_packet_sended_U8].flag_is_waiting_for_ack = false;
-				liste_de_paquets_a_envoyer_ENA[counter_packet_sended_U8].time_ack_is_received_ms_U32 = HAL_millis_U32()-liste_de_paquets_a_envoyer_ENA[counter_packet_sended_U8].begin_waiting_ack_time_ms_U32;
-				counter_packet_error_U8++;
+				//liste_de_paquets_a_envoyer_ENA[counter_packet_sended_U8].time_ack_is_received_ms_U32 = HAL_millis_U32()-liste_de_paquets_a_envoyer_ENA[counter_packet_sended_U8].begin_waiting_ack_time_ms_U32;
 				return TED_TIMEOUT_ACK_IS_NOT_RECEIVED;
 			}
 			else
@@ -311,6 +310,7 @@ static TED_ret_val_en TED_processTxPacket (void)
 			if(liste_de_paquets_a_envoyer_ENA[counter_packet_sended_U8].counter_retry_sending_U8 > cRETRY_SENDING_PACKET_NUMBER_MAX_U8)
 			{
 				tache_en_cours_EN = NO_TASK;
+				counter_packet_error_U8++;
 				//stack_error_STRA.TED_error_code_EN = TED_NUMBER_OF_RETRY_TOO_BIG_EN;
 				//stack_error_STRA.localisation_code_U8 = 2;
 				return TED_NUMBER_OF_RETRY_TOO_BIG_EN;
@@ -431,7 +431,7 @@ static void TED_processRxPacket (void)
 			{
 				liste_de_paquets_recus_ENA[counter_packet_received_U8].TED_packet_UN.packet_U8A[index_U8] = TED_Rx_packet_UN.packet_U8A[index_U8];
 			}
-			liste_de_paquets_recus_ENA[counter_packet_received_U8].received_time_ms_U32 = HAL_millis_U32();
+			//liste_de_paquets_recus_ENA[counter_packet_received_U8].received_time_ms_U32 = HAL_millis_U32();
 		}
 		//TODO else if c'est un paquet a renvoyer: le stocker dans la pile de paquet a renvoyer et attendre si l'on recoit l'ACK, si le paquet est un ack, il faut l'envoyer. Si on a pas recu l'ack au bout d'un temps random alors il faut l'envoyer sinon on ne l'envoie pas
 		//IsPacketHasToBeResentForMesh_B
@@ -493,9 +493,9 @@ static TED_ret_val_en TED_treatRxPacket(TED_packet_un TED_packet_UN)
 				DBG_printString("and corresponding to the actual Tx packet>\r\n",INFO_EN);
 				liste_de_paquets_a_envoyer_ENA[counter_packet_sended_U8].flag_is_waiting_for_ack = false;
 				liste_de_paquets_a_envoyer_ENA[counter_packet_sended_U8].is_ack_rx = true;
-				liste_de_paquets_a_envoyer_ENA[counter_packet_sended_U8].time_ack_is_received_ms_U32 = HAL_millis_U32()-liste_de_paquets_a_envoyer_ENA[counter_packet_sended_U8].begin_waiting_ack_time_ms_U32;
+				//liste_de_paquets_a_envoyer_ENA[counter_packet_sended_U8].time_ack_is_received_ms_U32 = HAL_millis_U32()-liste_de_paquets_a_envoyer_ENA[counter_packet_sended_U8].begin_waiting_ack_time_ms_U32;
 				DBG_printString("<ACK received ",INFO_EN);
-				DBG_printUint32_t(liste_de_paquets_a_envoyer_ENA[counter_packet_sended_U8].time_ack_is_received_ms_U32,INFO_EN);
+				//DBG_printUint32_t(liste_de_paquets_a_envoyer_ENA[counter_packet_sended_U8].time_ack_is_received_ms_U32,INFO_EN);
 				DBG_printString("ms after sending the packet>\r\n\r\n",INFO_EN);
 				return NRF_OK_EN;
 			}
@@ -640,3 +640,16 @@ inline void Ted_Process(void)
 	TED_processRxPacket();
 	TED_processTxPacket();
 }
+
+inline uint8_t TED_getCounterErrorValue_U8(void)
+{
+	return counter_packet_error_U8;
+}
+
+inline void TED_printCounterErrorValue(void)
+{
+	DBG_printString("<COUNTER ERROR VALUE: ", ERROR_EN);
+	DBG_printUint32_t(counter_packet_error_U8, ERROR_EN);
+	DBG_printString(">\r\n", ERROR_EN);
+}
+

@@ -51,6 +51,14 @@
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+#include "string.h"
+#include "hal.h"
+#include "tools.h"
+#include "Ted24.h"
+#include "NRF24L01.h"
+#include "configuration.h"
+#include "debug.h"
+#include "Application.h"
 
 /* USER CODE END 0 */
 

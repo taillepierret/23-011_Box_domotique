@@ -79,7 +79,8 @@ void Ted_Process(void);
 TED_ret_val_en TED_ping_EN(uint8_t address_dst_U8);
 bool TED_IsDataAvailable_B(void);
 TED_ret_val_en TED_init(uint8_t my_address_U8,uint8_t ID_network_U8,NRF_HAL_function_str NRF_HAL_function_STR,bool flag_activating_low_power_mode_B);
-
+uint8_t TED_getCounterErrorValue_U8(void);
+void TED_printCounterErrorValue(void);
 
 
 

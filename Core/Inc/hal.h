@@ -11,6 +11,7 @@
 #include "stdint.h"
 #include "stdbool.h"
 
+#define cSIZE_BUFFER_UART_2_RX_U16 ((uint16_t)50)
 
 typedef enum {
 	LED_VERTE_EN,
@@ -37,6 +38,9 @@ void HAL_setIRQ(bool state_B);
 void HAL_delay_ms(uint32_t time_ms_U32);
 void print_string(char* string);
 void print_uint32(uint32_t number_U32);
+void HAL_getUart2Buffer(uint8_t rx_get_buffer_U8A[cSIZE_BUFFER_UART_2_RX_U16]);
+void HAL_enableRxDmaUart2(void);
+void HAL_flushUart2Buffer(void);
 
 
 #endif /* INC_HAL_H_ */

@@ -13,6 +13,7 @@
 extern SPI_HandleTypeDef hspi1;
 extern UART_HandleTypeDef huart2;
 static bool HAL_spiIsInit = false;
+uint8_t rx_buffer_U8A[cSIZE_BUFFER_UART_2_RX_U16];
 
 inline uint32_t HAL_millis_U32(void)
 {
@@ -80,14 +81,39 @@ inline void HAL_delay_ms(uint32_t time_ms_U32)
 
 inline void print_string(char* string)
 {
-	 HAL_UART_Transmit(&huart2, (uint8_t*)string, strlen(string), 100);
+	 HAL_UART_Transmit(&huart2, (uint8_t*)string, strlen(string), 1000);
 }
 
 inline void print_uint32(uint32_t number_U32)
 {
-	char buffer[10] = "";
-	snprintf(buffer, 10, "%lu", number_U32);
-	HAL_UART_Transmit(&huart2, (uint8_t*)buffer, 10, 100);
+	char buffer_CA[10] = "";
+	sprintf(buffer_CA, "%lu", number_U32);
+	HAL_UART_Transmit(&huart2, (uint8_t*)buffer_CA, strlen(buffer_CA), 1000);
+}
+
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
+{
+	HAL_UART_Receive_DMA(&huart2, rx_buffer_U8A, 50);
+}
+
+inline void HAL_enableRxDmaUart2(void)
+{
+	HAL_UART_Receive_DMA(&huart2, rx_buffer_U8A, cSIZE_BUFFER_UART_2_RX_U16);
+}
+
+void HAL_getUart2Buffer(uint8_t rx_get_buffer_U8A[cSIZE_BUFFER_UART_2_RX_U16])
+{
+	for (uint8_t index_U8=0 ; index_U8<cSIZE_BUFFER_UART_2_RX_U16 ; index_U8++)
+	{
+		rx_get_buffer_U8A[index_U8] = rx_buffer_U8A[index_U8];
+	}
+}
+void HAL_flushUart2Buffer(void)
+{
+	for (uint8_t index_U8=0 ; index_U8<cSIZE_BUFFER_UART_2_RX_U16 ; index_U8++)
+	{
+		rx_buffer_U8A[index_U8] = '\0';
+	}
 }
 
 

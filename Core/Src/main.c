@@ -28,6 +28,8 @@
 #include "NRF24L01.h"
 #include "configuration.h"
 #include "debug.h"
+#include "Application.h"
+#include "stm32l0xx_ll_usart.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -37,10 +39,6 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-#define SERVEUR
-#ifndef SERVEUR
-#define RX_MODE
-#endif
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -57,14 +55,6 @@ UART_HandleTypeDef huart2;
 DMA_HandleTypeDef hdma_usart2_rx;
 
 /* USER CODE BEGIN PV */
-const static NRF_HAL_function_str NRF_HAL_function_local_STR =
-{
-	.readSpiValue_EN_PF = HAL_readSpiValue_EN,
-	.setCe_PF = HAL_setCE,
-	.setIrq_PF = HAL_setIRQ,
-	.writeSpiValue_EN_PF = HAL_writeSpiValue_EN
-};
-//TODO pour un ack le payload semble ne pas etre bon ...
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -80,16 +70,6 @@ static void MX_RTC_Init(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-
-#ifdef SERVEUR
-uint8_t my_addr = 69;
-uint8_t addr_dst = 14;
-#else
-uint8_t my_addr = 14;
-uint8_t addr_dst = 69;
-#endif
-TED_packet_un TED_packet_UN;
-
 /* USER CODE END 0 */
 
 /**
@@ -125,26 +105,17 @@ int main(void)
   MX_SPI1_Init();
   MX_RTC_Init();
   /* USER CODE BEGIN 2 */
-  DBG_setLogLevel(VERBOSE_EN);
-  TED_init(my_addr, cNETWORK_ID_U8, NRF_HAL_function_local_STR,true);
-#ifndef SERVEUR
-	TED_ping_EN(addr_dst);
-	TED_ping_EN(addr_dst);
-	TED_ping_EN(addr_dst);
-	TED_ping_EN(addr_dst);
-	TED_ping_EN(addr_dst);
-	TED_ping_EN(addr_dst);
-#endif
+  runApp();
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
+
   while (1)
   {
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-	  Ted_Process();
   }
   /* USER CODE END 3 */
 }
@@ -166,7 +137,10 @@ void SystemClock_Config(void)
   /** Initializes the RCC Oscillators according to the specified parameters
   * in the RCC_OscInitTypeDef structure.
   */
-  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_LSI|RCC_OSCILLATORTYPE_MSI;
+  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSI|RCC_OSCILLATORTYPE_LSI
+                              |RCC_OSCILLATORTYPE_MSI;
+  RCC_OscInitStruct.HSIState = RCC_HSI_ON;
+  RCC_OscInitStruct.HSICalibrationValue = RCC_HSICALIBRATION_DEFAULT;
   RCC_OscInitStruct.LSIState = RCC_LSI_ON;
   RCC_OscInitStruct.MSIState = RCC_MSI_ON;
   RCC_OscInitStruct.MSICalibrationValue = 0;
@@ -191,7 +165,7 @@ void SystemClock_Config(void)
     Error_Handler();
   }
   PeriphClkInit.PeriphClockSelection = RCC_PERIPHCLK_USART2|RCC_PERIPHCLK_RTC;
-  PeriphClkInit.Usart2ClockSelection = RCC_USART2CLKSOURCE_PCLK1;
+  PeriphClkInit.Usart2ClockSelection = RCC_USART2CLKSOURCE_HSI;
   PeriphClkInit.RTCClockSelection = RCC_RTCCLKSOURCE_LSI;
   if (HAL_RCCEx_PeriphCLKConfig(&PeriphClkInit) != HAL_OK)
   {
