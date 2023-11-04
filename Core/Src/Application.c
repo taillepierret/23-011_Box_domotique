@@ -43,6 +43,10 @@ TED_packet_un TED_packet_UN;
 void runApp(void)
 {
 	DBG_setLogLevel(VERBOSE_EN);
+	DBG_printString("<PROGARMME RUNNING>\r\n", ERROR_EN, true);
+	DBG_printString("Firmware version: ", ERROR_EN, true);
+	DBG_printString(cVersion_FIRMWARE_CA, ERROR_EN, false);
+	DBG_printString("\r\n", ERROR_EN, false);
 	TED_init(my_addr, cNETWORK_ID_U8, NRF_HAL_function_local_STR,true);
 	APP_addDebugCommand();
 	HAL_enableRxDmaUart2();
@@ -94,7 +98,7 @@ void APP_sendPingFromDBG(char command_CA[cSIZE_MAX_BUFFER_DEBUG_U16])
 			if(command_CA[counter_U16] != '0' && command_CA[counter_U16] != '1' && command_CA[counter_U16] != '2' && command_CA[counter_U16] != '3' && command_CA[counter_U16] != '4' &&
 			   command_CA[counter_U16] != '5' && command_CA[counter_U16] != '6' && command_CA[counter_U16] != '7' && command_CA[counter_U16] != '8' && command_CA[counter_U16] != '9')
 			{
-				DBG_printString("<ADDRESS VALUE IS NOT A NUMBER>\r\n", ERROR_EN);
+				DBG_printString("<ADDRESS VALUE IS NOT A NUMBER>\r\n", ERROR_EN, true);
 				return;
 			}
 		}
@@ -106,7 +110,7 @@ void APP_sendPingFromDBG(char command_CA[cSIZE_MAX_BUFFER_DEBUG_U16])
 	nb_char_address_value__U8 = (uint8_t)(ending_index_U16-begin_index_U16-1);
 	if(nb_char_address_value__U8>3)
 	{
-		DBG_printString("<ADDRESS VALUE IS TOO LONG>\r\n", ERROR_EN);
+		DBG_printString("<ADDRESS VALUE IS TOO LONG>\r\n", ERROR_EN, true);
 		return;
 	}
 	for(uint8_t counter_U8=0 ; counter_U8<nb_char_address_value__U8 ; counter_U8++)
@@ -117,13 +121,13 @@ void APP_sendPingFromDBG(char command_CA[cSIZE_MAX_BUFFER_DEBUG_U16])
 	address_value_U16 = atoi(address_value_CA);
 	if (address_value_U16>0xFF) //si l'adresse n'est pas codée sur 8bits
 	{
-		DBG_printString("<ADDRESS VALUE IS TOO LONG>\r\n", ERROR_EN);
+		DBG_printString("<ADDRESS VALUE IS TOO LONG>\r\n", ERROR_EN, true);
 		return;
 	}
 	TED_ping_EN((uint8_t)address_value_U16);
-	DBG_printString("<PING SEND TO:", ERROR_EN);
+	DBG_printString("<PING SEND TO:", ERROR_EN, true);
 	DBG_printUint32_t(address_value_U16, ERROR_EN);
-	DBG_printString(">\r\n", ERROR_EN);
+	DBG_printString(">\r\n", ERROR_EN, false);
 }
 
 

@@ -12,6 +12,7 @@
 
 extern SPI_HandleTypeDef hspi1;
 extern UART_HandleTypeDef huart2;
+extern RTC_HandleTypeDef hrtc;
 static bool HAL_spiIsInit = false;
 uint8_t rx_buffer_U8A[cSIZE_BUFFER_UART_2_RX_U16];
 
@@ -116,5 +117,66 @@ void HAL_flushUart2Buffer(void)
 	}
 }
 
+
+HAL_ret_val_en HAL_getTime (HAL_time_str* HAL_time_STR)
+{
+	HAL_StatusTypeDef retval;
+	RTC_TimeTypeDef sTime;
+	//RTC_DateTypeDef sDate;
+	retval = HAL_RTC_GetTime(&hrtc, &sTime, RTC_FORMAT_BIN);
+	if (retval != HAL_OK)
+	{
+		return RTC_TROUBLE_EN;
+	}
+
+	/*retval = HAL_RTC_GetDate(&hrtc, &sDate, RTC_FORMAT_BIN);
+	if (retval != HAL_OK)
+	{
+		return RTC_TROUBLE_EN;
+	}*/
+
+	/*HAL_time_STR->Date = sDate.Date;
+	HAL_time_STR->Month = sDate.Month;
+	HAL_time_STR->WeekDay = sDate.WeekDay;
+	HAL_time_STR->Year = sDate.Year;*/
+	HAL_time_STR->Hours = sTime.Hours;
+	HAL_time_STR->Minutes = sTime.Minutes;
+	HAL_time_STR->Seconds = sTime.Seconds;
+	return HAL_OK_EN;
+}
+
+
+HAL_ret_val_en HAL_setTime (HAL_time_str HAL_time_STR)
+{
+	HAL_StatusTypeDef retval;
+	RTC_TimeTypeDef sTime =
+	{
+		.Hours = HAL_time_STR.Hours,
+		.Minutes = HAL_time_STR.Minutes,
+		.Seconds = HAL_time_STR.Seconds
+	};
+	/*RTC_DateTypeDef sDate =
+	{
+		.Date = HAL_time_STR.Date,
+		.Year = HAL_time_STR.Year,
+		.Month = HAL_time_STR.Month,
+		.WeekDay = HAL_time_STR.WeekDay
+	};*/
+
+
+	retval = HAL_RTC_SetTime(&hrtc, &sTime, RTC_FORMAT_BIN);
+	if (retval != HAL_OK)
+	{
+		return RTC_TROUBLE_EN;
+	}
+
+	/*retval = HAL_RTC_SetDate(&hrtc, &sDate, RTC_FORMAT_BIN);
+	if (retval != HAL_OK)
+	{
+		return RTC_TROUBLE_EN;
+	}*/
+
+	return HAL_OK_EN;
+}
 
 

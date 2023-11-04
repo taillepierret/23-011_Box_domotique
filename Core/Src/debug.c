@@ -32,11 +32,26 @@ inline void DBG_setLogLevel(DBG_log_level_en DBG_log_level_EN)
 	local_DBG_log_level_EN = DBG_log_level_EN;
 }
 
-inline void DBG_printString(char* log_CA,DBG_log_level_en DBG_log_level_EN)
+inline void DBG_printString(char* log_CA,DBG_log_level_en DBG_log_level_EN, bool flag_to_show_time_B)
 {
 	if (local_DBG_log_level_EN<=DBG_log_level_EN)
 	{
-		print_string(log_CA);
+		if (flag_to_show_time_B == false)
+		{
+			print_string(log_CA);
+		}
+		else
+		{
+			HAL_time_str HAL_time_STR;
+			HAL_getTime (&HAL_time_STR);
+			print_uint32(HAL_time_STR.Hours);
+			print_string(":");
+			print_uint32(HAL_time_STR.Minutes);
+			print_string(":");
+			print_uint32(HAL_time_STR.Seconds);
+			print_string(" ");
+			print_string(log_CA);
+		}
 	}
 }
 
@@ -150,14 +165,14 @@ DBG_ret_val_en DBG_treatCommand(char* command_CA)
 			}
 			else
 			{
-				DBG_printString("<COMMAND DOES NOT HAVE FUNCTION>\r\n", ERROR_EN);
+				DBG_printString("<COMMAND DOES NOT HAVE FUNCTION>\r\n", ERROR_EN, true);
 				return DBG_COMMAND_WITHOUT_FUNCTION_EN;
 			}
-			DBG_printString("<COMMAND IS TREAT SUCCESFULLY>\r\n\r\n", ERROR_EN);
+			DBG_printString("<COMMAND IS TREAT SUCCESFULLY>\r\n\r\n", ERROR_EN, true);
 			return DBG_OK_EN;
 		}
 	}
-	DBG_printString("<COMMAND NOT FOUND>\r\n", ERROR_EN);
+	DBG_printString("<COMMAND NOT FOUND>\r\n", ERROR_EN, true);
 	return DBG_COMMAND_NOT_FOUND_EN;
 }
 
@@ -187,8 +202,8 @@ void printBufferUart2(void)
 {
 	uint8_t rx_buffer_U8A[cSIZE_BUFFER_UART_2_RX_U16];
 	HAL_getUart2Buffer(rx_buffer_U8A);
-	DBG_printString((char*)rx_buffer_U8A, ERROR_EN);
-	DBG_printString("\r\n", ERROR_EN);
+	DBG_printString((char*)rx_buffer_U8A, ERROR_EN, true);
+	DBG_printString("\r\n", ERROR_EN, false);
 }
 
 void DBG_process(void)

@@ -120,43 +120,43 @@ static inline void print_packet_with_string_payload(TED_packet_un TED_packet_UN)
 	{
 		string[index_U8] = TED_packet_UN.packet_STR.payload_U8A[index_U8];
 	}
-	DBG_printString("\r\n",INFO_EN);
-	DBG_printString("<Affichage du paquet recu>\r\n",INFO_EN);
-	DBG_printString("Version du reseau TED24: ",INFO_EN);
+	DBG_printString("\r\n",INFO_EN, false);
+	DBG_printString("<Affichage du paquet recu>\r\n",INFO_EN, true);
+	DBG_printString("Version du reseau TED24: ",INFO_EN, false);
 	DBG_printUint32_t(TED_packet_UN.packet_STR.version_Ted24_U4,INFO_EN);
-	DBG_printString("\r\n",INFO_EN);
+	DBG_printString("\r\n",INFO_EN, false);
 
-	DBG_printString("ID du reseau TED24: ",INFO_EN);
+	DBG_printString("ID du reseau TED24: ",INFO_EN, false);
 	DBG_printUint32_t(TED_packet_UN.packet_STR.ID_reseau_U4,INFO_EN);
-	DBG_printString("\r\n",INFO_EN);
+	DBG_printString("\r\n",INFO_EN, false);
 
-	DBG_printString("Adresse emetteur: ",INFO_EN);
+	DBG_printString("Adresse emetteur: ",INFO_EN, false);
 	DBG_printUint32_t(TED_packet_UN.packet_STR.address_emetteur_U8A[0],INFO_EN);
-	DBG_printString("\r\n",INFO_EN);
+	DBG_printString("\r\n",INFO_EN, false);
 
-	DBG_printString("Adresse destinataire: ",INFO_EN);
+	DBG_printString("Adresse destinataire: ",INFO_EN, false);
 	DBG_printUint32_t(TED_packet_UN.packet_STR.address_Destinataire_U8,INFO_EN);
-	DBG_printString("\r\n",INFO_EN);
+	DBG_printString("\r\n",INFO_EN, false);
 
-	DBG_printString("Fonction: ",INFO_EN);
+	DBG_printString("Fonction: ",INFO_EN, false);
 	DBG_printUint32_t(TED_packet_UN.packet_STR.function_U5,INFO_EN);
-	DBG_printString("\r\n",INFO_EN);
+	DBG_printString("\r\n",INFO_EN, false);
 
-	DBG_printString("Payload: ",INFO_EN);
-	DBG_printString(string,INFO_EN);
-	DBG_printString("\r\n",INFO_EN);
+	DBG_printString("Payload: ",INFO_EN, false);
+	DBG_printString(string,INFO_EN, false);
+	DBG_printString("\r\n",INFO_EN, false);
 
-	DBG_printString("CRC recu: ",INFO_EN);
+	DBG_printString("CRC recu: ",INFO_EN, false);
 	DBG_printUint32_t(TED_packet_UN.packet_STR.crc8_Id_paquet_U8,INFO_EN);
-	DBG_printString("\r\n",INFO_EN);
+	DBG_printString("\r\n",INFO_EN, false);
 
 	TED_packet_UN.packet_STR.crc8_Id_paquet_U8=0; //TODO a retirer ?
 
-	DBG_printString("CRC calcule: ",INFO_EN);
+	DBG_printString("CRC calcule: ",INFO_EN, false);
 	DBG_printUint32_t(calculate_crc8_U8(TED_packet_UN.packet_U8A,cSIZE_BUFFER_TX_MAX_U8-9),INFO_EN);
-	DBG_printString("\r\n",INFO_EN);
-	DBG_printString("<Fin du paquet recu>\r\n",INFO_EN);
-	DBG_printString("\r\n",INFO_EN);
+	DBG_printString("\r\n",INFO_EN, false);
+	DBG_printString("<Fin du paquet recu>\r\n",INFO_EN, false);
+	DBG_printString("\r\n",INFO_EN, false);
 }
 
 /**
@@ -229,7 +229,7 @@ static TED_ret_val_en TED_processTxPacket (void)
 			NRF_ret_val_EN = NRF24_TxMode_EN((uint8_t *)PipeAddress, 10);
 			if (NRF_ret_val_EN != NRF_OK_EN)
 			{
-				DBG_printString("<Switch to Tx mode impossible>\r\n", INFO_EN);
+				DBG_printString("<Switch to Tx mode impossible>\r\n", INFO_EN, true);
 				//stack_error_STRA.TED_error_code_EN = NRF_ret_val_EN;
 				//stack_error_STRA.localisation_code_U8 = 2;
 				tache_en_cours_EN = NO_TASK;
@@ -245,12 +245,12 @@ static TED_ret_val_en TED_processTxPacket (void)
 				{
 					//stack_error_STRA.TED_error_code_EN = NRF_ret_val_EN;
 					//stack_error_STRA.localisation_code_U8 = 2;
-					DBG_printString("<Switch to Rx mode impossible>\r\n", INFO_EN);
+					DBG_printString("<Switch to Rx mode impossible>\r\n", INFO_EN, true);
 					tache_en_cours_EN = NO_TASK;
 					return TED_RX_MODE_UNAVAILABLE_EN;
 				}
 				tache_en_cours_EN = NO_TASK;
-				DBG_printString("<Packet not sent>\r\n", INFO_EN);
+				DBG_printString("<Packet not sent>\r\n", INFO_EN, true);
 				return TED_SEND_PACKET_NOT_OK_EN;
 			}
 			else
@@ -260,7 +260,7 @@ static TED_ret_val_en TED_processTxPacket (void)
 				{
 					//stack_error_STRA.TED_error_code_EN = NRF_ret_val_EN;
 					//stack_error_STRA.localisation_code_U8 = 3;
-					DBG_printString("<Switch to Rx mode impossible>\r\n", INFO_EN);
+					DBG_printString("<Switch to Rx mode impossible>\r\n", INFO_EN, true);
 					tache_en_cours_EN = NO_TASK;
 					return TED_RX_MODE_UNAVAILABLE_EN;
 				}
@@ -276,7 +276,7 @@ static TED_ret_val_en TED_processTxPacket (void)
 					liste_de_paquets_a_envoyer_ENA[counter_packet_sended_U8].flag_is_waiting_for_ack = false;
 					tache_en_cours_EN = NO_TASK;
 				}
-				DBG_printString("<Waiting for ack...", INFO_EN);
+				DBG_printString("<Waiting for ack...", INFO_EN, true);
 				return TED_SEND_PACKET_OK_EN;
 			}
 			break;
@@ -289,8 +289,8 @@ static TED_ret_val_en TED_processTxPacket (void)
 			}
 			else if (HAL_millis_U32()-liste_de_paquets_a_envoyer_ENA[counter_packet_sended_U8].begin_waiting_ack_time_ms_U32 > cWAITING_TIMEOUT_ACK_ms_U32) //Timeout, ack non recu
 			{
-				DBG_printString(">\r\n", INFO_EN);
-				DBG_printString("<ACK not received>\r\n", INFO_EN);
+				DBG_printString(">\r\n", INFO_EN, false);
+				DBG_printString("<ACK not received>\r\n", INFO_EN, true);
 				//stack_error_STRA.TED_error_code_EN = TED_TIMEOUT_ACK_IS_NOT_RECEIVED;
 				//stack_error_STRA.localisation_code_U8 = 2;
 				tache_en_cours_EN = RETRY_SENDING_TASK;
@@ -301,7 +301,7 @@ static TED_ret_val_en TED_processTxPacket (void)
 			else
 			{
 				//on attend toujours l'ACK et on est pas en timeout
-				DBG_printString(".", INFO_EN);
+				DBG_printString(".", INFO_EN, false);
 				return TED_WAITING_FOR_ACK;
 			}
 			break;
@@ -318,10 +318,10 @@ static TED_ret_val_en TED_processTxPacket (void)
 			else
 			{
 				tache_en_cours_EN = SENDING_PACKET_TASK;
-				DBG_printString("---------------------------------------------------------------------------------------------------------------------\r\n", INFO_EN);
-				DBG_printString("<Retry number: ", INFO_EN);
+				DBG_printString("---------------------------------------------------------------------------------------------------------------------\r\n", INFO_EN, false);
+				DBG_printString("<Retry number: ", INFO_EN, true);
 				DBG_printUint32_t(liste_de_paquets_a_envoyer_ENA[counter_packet_sended_U8].counter_retry_sending_U8, INFO_EN);
-				DBG_printString(">\r\n", INFO_EN);
+				DBG_printString(">\r\n", INFO_EN, false);
 				if(counter_packet_sended_U8==0)
 				{
 					counter_packet_sended_U8 = cSIZE_STACK_PACKET_TO_SEND_U8-1;
@@ -470,45 +470,45 @@ static TED_ret_val_en TED_treatRxPacket(TED_packet_un TED_packet_UN)
 {
 	if(local_TED_config_node_TED.flag_node_is_init_B != true)
 	{
-		DBG_printString("TED24 protocol not init...", ERROR_EN);
+		DBG_printString("TED24 protocol not init...", ERROR_EN, true);
 		while(1)
 		{
-			DBG_printString(".", ERROR_EN);
+			DBG_printString(".", ERROR_EN, false);
 		}
 	}
 	switch(TED_packet_UN.packet_STR.function_U5)
 	{
 		case PING:
-			DBG_printString("<Ping packet received>\r\n",INFO_EN);
+			DBG_printString("<Ping packet received>\r\n",INFO_EN, true);
 			TED_sendAck_EN(TED_packet_UN);//TODO gerer la valeur de retour
 			return NRF_OK_EN;
 			break;
 
 		case ACK:
-			DBG_printString("<ACK packet received ",INFO_EN);
+			DBG_printString("<ACK packet received ",INFO_EN, true);
 			if (liste_de_paquets_a_envoyer_ENA[counter_packet_sended_U8].flag_is_waiting_for_ack == true && //si le paquet qui a ete envoye attend un ack
 				TED_packet_UN.packet_STR.payload_U8A[1] == liste_de_paquets_a_envoyer_ENA[counter_packet_sended_U8].TED_packet_UN.packet_STR.crc8_Id_paquet_U8 &&
 				TED_packet_UN.packet_STR.payload_U8A[0] == liste_de_paquets_a_envoyer_ENA[counter_packet_sended_U8].TED_packet_UN.packet_STR.function_U5)
 			{
-				DBG_printString("and corresponding to the actual Tx packet>\r\n",INFO_EN);
+				DBG_printString("and corresponding to the actual Tx packet>\r\n",INFO_EN, true);
 				liste_de_paquets_a_envoyer_ENA[counter_packet_sended_U8].flag_is_waiting_for_ack = false;
 				liste_de_paquets_a_envoyer_ENA[counter_packet_sended_U8].is_ack_rx = true;
 				//liste_de_paquets_a_envoyer_ENA[counter_packet_sended_U8].time_ack_is_received_ms_U32 = HAL_millis_U32()-liste_de_paquets_a_envoyer_ENA[counter_packet_sended_U8].begin_waiting_ack_time_ms_U32;
-				DBG_printString("<ACK received ",INFO_EN);
+				DBG_printString("<ACK received ",INFO_EN, true);
 				//DBG_printUint32_t(liste_de_paquets_a_envoyer_ENA[counter_packet_sended_U8].time_ack_is_received_ms_U32,INFO_EN);
-				DBG_printString("ms after sending the packet>\r\n\r\n",INFO_EN);
+				DBG_printString("ms after sending the packet>\r\n\r\n",INFO_EN, true);
 				return NRF_OK_EN;
 			}
 			else
 			{
-				DBG_printString("but not corresponding to the actual Tx packet>\r\n",INFO_EN);
+				DBG_printString("but not corresponding to the actual Tx packet>\r\n",INFO_EN, true);
 				counter_packet_error_U8++;
 				return TED_ACK_RECEIVED_NOT_CORRESPONDING_TO_ACTUAL_TX_PACKET;
 			}
 
 			break;
 		default:
-			DBG_printString("<Packet received but function not found>\r\n",INFO_EN);
+			DBG_printString("<Packet received but function not found>\r\n",INFO_EN, true);
 			return TED_COMMAND_NOT_FOUND_EN;
 	}
 }
@@ -602,10 +602,10 @@ inline bool TED_IsDataAvailable_B(void)
 {
 	if(local_TED_config_node_TED.flag_node_is_init_B != true)
 	{
-		DBG_printString("TED24 protocol not init...", ERROR_EN);
+		DBG_printString("TED24 protocol not init...", ERROR_EN, true);
 		while(1)
 		{
-			DBG_printString(".", ERROR_EN);
+			DBG_printString(".", ERROR_EN, false);
 		}
 	}
 	return NRF24_isDataAvailable_EN(1) == NRF_DATA_AVAILABLE_EN;
@@ -616,10 +616,10 @@ inline TED_ret_val_en TED_ping_EN(uint8_t address_dst_U8)
 {
 	if(local_TED_config_node_TED.flag_node_is_init_B != true)
 	{
-		DBG_printString("TED24 protocol not init...", ERROR_EN);
+		DBG_printString("TED24 protocol not init...", ERROR_EN, true);
 		while(1)
 		{
-			DBG_printString(".", ERROR_EN);
+			DBG_printString(".", ERROR_EN, false);
 		}
 	}
 	uint8_t payload[cSIZE_PAYLOAD_U8] = "Aurelie est si belle";
@@ -630,10 +630,10 @@ inline void Ted_Process(void)
 {
 	if(local_TED_config_node_TED.flag_node_is_init_B != true)
 	{
-		DBG_printString("TED24 protocol not init...", ERROR_EN);
+		DBG_printString("TED24 protocol not init...", ERROR_EN, true);
 		while(1)
 		{
-			DBG_printString(".", ERROR_EN);
+			DBG_printString(".", ERROR_EN, false);
 		}
 	}
 
@@ -648,8 +648,8 @@ inline uint8_t TED_getCounterErrorValue_U8(void)
 
 inline void TED_printCounterErrorValue(void)
 {
-	DBG_printString("<COUNTER ERROR VALUE: ", ERROR_EN);
+	DBG_printString("<COUNTER ERROR VALUE: ", ERROR_EN, true);
 	DBG_printUint32_t(counter_packet_error_U8, ERROR_EN);
-	DBG_printString(">\r\n", ERROR_EN);
+	DBG_printString(">\r\n", ERROR_EN, false);
 }
 

@@ -25,8 +25,21 @@ typedef enum
 	SPI_WRITE_ERROR_EN,
 	SPI_WRITE_OK_EN,
 	SPI_READ_ERROR_EN,
-	SPI_READ_OK_EN
+	SPI_READ_OK_EN,
+	RTC_TROUBLE_EN,
+	HAL_OK_EN
 }HAL_ret_val_en;
+
+typedef struct
+{
+	  uint8_t Seconds;
+	  uint8_t Minutes;
+	  uint8_t Hours;
+	  /*uint8_t WeekDay;
+	  uint8_t Date;
+	  uint8_t Month;
+	  uint8_t Year;*/
+}HAL_time_str;
 
 
 HAL_ret_val_en HAL_setLed(led_en led_EN, bool state_B);
@@ -41,6 +54,8 @@ void print_uint32(uint32_t number_U32);
 void HAL_getUart2Buffer(uint8_t rx_get_buffer_U8A[cSIZE_BUFFER_UART_2_RX_U16]);
 void HAL_enableRxDmaUart2(void);
 void HAL_flushUart2Buffer(void);
+HAL_ret_val_en HAL_getTime (HAL_time_str* HAL_time_STR);
+HAL_ret_val_en HAL_setTime (HAL_time_str HAL_time_STR);
 
 
 #endif /* INC_HAL_H_ */

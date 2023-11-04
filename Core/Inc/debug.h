@@ -29,7 +29,7 @@ typedef enum
 	DBG_COMMAND_NOT_FOUND_EN
 }DBG_ret_val_en;
 
-void DBG_printString(char* log_CA,DBG_log_level_en DBG_log_level_EN);
+void DBG_printString(char* log_CA,DBG_log_level_en DBG_log_level_EN, bool flag_to_show_time_B);
 void DBG_printUint32_t(uint32_t number_U32,DBG_log_level_en DBG_log_level_EN);
 void DBG_setLogLevel(DBG_log_level_en DBG_log_level_EN);
 void DBG_addRxPacketToStack(char DBG_buffer_rx_CA[cSIZE_MAX_BUFFER_DEBUG_U16]);
