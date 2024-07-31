@@ -1,0 +1,3 @@
+[submodule "02_Firmware/23-011_Box_domotique_Firmware/Plateforme-RF24"]
+	path = 02_Firmware/23-011_Box_domotique_Firmware/Plateforme-RF24
+	url = https://github.com/taillepierret/Plateforme-RF24.git

@@ -1,0 +1,46 @@
+{ 
+    "version": "2.0.0", 
+    "windows": { 
+        "options": { 
+            "shell": { 
+                "executable": "cmd.exe", 
+                "args": ["/d", "/c"] 
+            } 
+        } 
+    }, 
+    "tasks": [ 
+        { 
+            "type": "cppbuild", 
+            "label": "Build project", 
+            "command": "cmake", 
+            "args": ["--build", "${workspaceFolder}/build/Release", "-j", "8"], 
+            "options": { 
+                "cwd": "${workspaceFolder}" 
+            }, 
+            "problemMatcher": ["$gcc"], 
+            "group": { 
+                "kind": "build", 
+                "isDefault": true 
+            } 
+        }, 
+        { 
+            "type": "shell", 
+            "label": "Upload project", 
+            "command": "openocd", 
+            "args": [ 
+                "-f", "interface/stlink.cfg", 
+                "-f", "target/stm32l0.cfg", 
+                "-c", "program ${workspaceFolder}/build/Release/23-011_Box_domotique_Firmware.elf verify reset exit" 
+            ], 
+            "options": { 
+                "cwd": "${workspaceFolder}" 
+            }, 
+            "problemMatcher": [] 
+        }, 
+        { 
+            "label": "Build and Upload project", 
+            "dependsOrder": "sequence", 
+            "dependsOn": ["Build project", "Upload project"] 
+        } 
+    ] 
+}
