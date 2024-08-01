@@ -11,10 +11,13 @@ LOG_HAL_functions_str LOG_HAL_functions_STR =
 	.HAL_DebugPrint = &HAL_print_string
 };
 
+static char raw_buffer_CA[cSIZE_BUFFER_UART_2_RX_U16];
+static char cleaning_buffer_CA[cSIZE_BUFFER_UART_2_RX_U16];
+
 void runApp(void)
 {
 	//initialisation du hardware
-	LOG_Init(&LOG_HAL_functions_STR);
+	LOG_Init(&LOG_HAL_functions_STR,cSIZE_BUFFER_UART_2_RX_U16);
 
 
 
@@ -35,11 +38,9 @@ void runApp(void)
 	LOG_PrintString("ID reseau: ", LOG_HIDE_TIME_B, LOG_SHOW_LOG_LEVEL_B, LOG_SHOW_LOG_LEVEL_B);
 	LOG_PrintUint8CRLF(NETWORK_ID_U8, LOG_LEVEL_INFO_EN);
 
-
-
 	while(1)
 	{
-		
+		LOG_process(raw_buffer_CA, cleaning_buffer_CA);
 	}
 }
 

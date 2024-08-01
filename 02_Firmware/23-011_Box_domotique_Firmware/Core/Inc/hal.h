@@ -39,7 +39,7 @@ void HAL_setCE(bool state_B);
 void HAL_setIRQ(bool state_B);
 void HAL_delay_ms(uint32_t time_ms_U32);
 void HAL_print_string(char* string);
-void HAL_getUart2Buffer(uint8_t rx_get_buffer_U8A[cSIZE_BUFFER_UART_2_RX_U16]);
+void HAL_getUart2Buffer(uint8_t* rx_get_buffer_U8A);
 void HAL_enableRxDmaUart2(void);
 void HAL_flushUart2Buffer(void);
 void HAL_GetTime(HAL_RTC_values_str* HAL_RTC_values_STR);

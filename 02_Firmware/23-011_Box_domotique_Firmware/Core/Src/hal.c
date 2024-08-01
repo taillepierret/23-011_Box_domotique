@@ -95,7 +95,7 @@ inline void HAL_enableRxDmaUart2(void)
 	HAL_UART_Receive_DMA(&huart2, rx_buffer_U8A, cSIZE_BUFFER_UART_2_RX_U16);
 }
 
-void HAL_getUart2Buffer(uint8_t rx_get_buffer_U8A[cSIZE_BUFFER_UART_2_RX_U16])
+void HAL_getUart2Buffer(uint8_t* rx_get_buffer_U8A)
 {
 	for (uint8_t index_U8=0 ; index_U8<cSIZE_BUFFER_UART_2_RX_U16 ; index_U8++)
 	{
@@ -133,7 +133,8 @@ void HAL_InitDebugUart(void)
 	huart2.AdvancedInit.AdvFeatureInit = UART_ADVFEATURE_NO_INIT;
 	if (HAL_UART_Init(&huart2) != HAL_OK)
 	{
-	Error_Handler();
+		Error_Handler();
 	}
+	HAL_enableRxDmaUart2();
 }
 
