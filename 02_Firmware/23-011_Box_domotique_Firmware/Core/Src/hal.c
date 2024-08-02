@@ -106,7 +106,7 @@ void HAL_flushUart2Buffer(void)
 {
 	for (uint8_t index_U8=0 ; index_U8<cSIZE_BUFFER_UART_2_RX_U16 ; index_U8++)
 	{
-		rx_buffer_U8A[index_U8] = '\0';
+		rx_buffer_U8A[index_U8] = '0';
 	}
 }
 
