@@ -8,7 +8,10 @@ LOG_HAL_functions_str LOG_HAL_functions_STR =
 {
 	.InitDebugUart = &HAL_InitDebugUart,
 	.HAL_GetTime = &HAL_GetTime,
-	.HAL_DebugPrint = &HAL_print_string
+	.HAL_DebugPrint = &HAL_print_string,
+	.HAL_getUart2Buffer = &HAL_getUart2Buffer,
+	.HAL_cleanUart2Buffer = &HAL_flushUart2Buffer,
+	.HAL_GetTimeMs_U32 = &HAL_millis_U32
 };
 
 static char raw_buffer_CA[cSIZE_BUFFER_UART_2_RX_U16];
