@@ -61,8 +61,8 @@ all: main-build
 main-build: 23-009_Box_domotique_Firmware.elf secondary-outputs
 
 # Tool invocations
-23-009_Box_domotique_Firmware.elf 23-009_Box_domotique_Firmware.map: $(OBJS) $(USER_OBJS) C:\Projets\23-011_Box_domotique\02_Firmware\23-009_Box_domotique_Firmware\STM32L010C6TX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-gcc -o "23-009_Box_domotique_Firmware.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m0plus -T"C:\Projets\23-011_Box_domotique\02_Firmware\23-009_Box_domotique_Firmware\STM32L010C6TX_FLASH.ld" --specs=nosys.specs -Wl,-Map="23-009_Box_domotique_Firmware.map" -Wl,--gc-sections -static --specs=nano.specs -mfloat-abi=soft -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+23-009_Box_domotique_Firmware.elf 23-009_Box_domotique_Firmware.map: $(OBJS) $(USER_OBJS) C:\Projets\23-011_Box_domotique\02_Firmware\23-011_Box_domotique_Firmware\STM32L010C6TX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-gcc -o "23-009_Box_domotique_Firmware.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m0plus -T"C:\Projets\23-011_Box_domotique\02_Firmware\23-011_Box_domotique_Firmware\STM32L010C6TX_FLASH.ld" --specs=nosys.specs -Wl,-Map="23-009_Box_domotique_Firmware.map" -Wl,--gc-sections -static --specs=nano.specs -mfloat-abi=soft -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
 
