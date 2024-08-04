@@ -9,11 +9,11 @@
 LOG_HAL_functions_str LOG_HAL_functions_STR =
 {
 	.InitDebugUart = &HAL_InitDebugUart,
-	.HAL_GetTime = &HAL_GetTime,
-	.HAL_DebugPrint = &HAL_print_string,
-	.HAL_getUart2Buffer = &HAL_getUart2Buffer,
-	.HAL_cleanUart2Buffer = &HAL_flushUart2Buffer,
-	.HAL_GetTimeMs_U32 = &HAL_millis_U32
+	.GetTime = &HAL_GetTime,
+	.DebugPrint = &HAL_print_string,
+	.GetUart2Buffer = &HAL_getUart2Buffer,
+	.CleanUart2Buffer = &HAL_flushUart2Buffer,
+	.Millis_U32 = &HAL_millis_U32
 };
 
 NRF_HAL_function_str NRF_HAL_functions_STR =
