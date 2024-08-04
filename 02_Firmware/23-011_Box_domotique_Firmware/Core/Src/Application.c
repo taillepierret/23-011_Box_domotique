@@ -2,6 +2,8 @@
 #include "../../Plateforme-RF24/Firmware_24-006_plateforme_RF24/Inc/log.h"
 #include "../Inc/configuration.h"
 #include "../Inc/hal.h"
+#include "../Inc/radio.h"
+#include "../Inc/typedef.h"
 
 
 LOG_HAL_functions_str LOG_HAL_functions_STR =
@@ -14,6 +16,16 @@ LOG_HAL_functions_str LOG_HAL_functions_STR =
 	.HAL_GetTimeMs_U32 = &HAL_millis_U32
 };
 
+NRF_HAL_function_str NRF_HAL_functions_STR =
+{
+		.setCe_PF = &HAL_setCE,
+		.delay_ms_PF = &HAL_delay_ms,
+		.writeSpiValue_EN_PF = &HAL_writeSpiValue_EN,
+		.readSpiValue_EN_PF = &HAL_readSpiValue_EN,
+		.getTimestamp_PF_U32 = &HAL_GetTimestamp_U32,
+		.millis_PF_U32 = &HAL_millis_U32
+};
+
 static char raw_buffer_CA[cSIZE_BUFFER_UART_2_RX_U16];
 static char cleaning_buffer_CA[cSIZE_BUFFER_UART_2_RX_U16];
 
@@ -22,8 +34,7 @@ void runApp(void)
 	//initialisation du hardware
 	LOG_Init(&LOG_HAL_functions_STR,cSIZE_BUFFER_UART_2_RX_U16);
 
-
-
+	RADIO_Init_B(NULL, NRF_HAL_functions_STR, PROTOCOL_VERSION_U8, NETWORK_ID_U8, DOMOTIC_BOX_ADDRESS_U8);
 
 
 	LOG_setLogLevel(LOG_LEVEL_VERBOSE_EN);
@@ -44,6 +55,8 @@ void runApp(void)
 	while(1)
 	{
 		LOG_process(raw_buffer_CA, cleaning_buffer_CA);
+		//RADIO_process();
+		RADIO_ShowAllNetworkPackets();
 	}
 }
 

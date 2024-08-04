@@ -85,11 +85,6 @@ inline void HAL_print_string(char* string)
 	 HAL_UART_Transmit(&huart2, (uint8_t*)string, strlen(string), 1000);
 }
 
-/*void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
-{
-	HAL_UART_Receive_DMA(&huart2, rx_buffer_U8A, cSIZE_BUFFER_UART_2_RX_U16);
-}*/
-
 inline void HAL_enableRxDmaUart2(void)
 {
 	HAL_UART_Receive_DMA(&huart2, rx_buffer_U8A, cSIZE_BUFFER_UART_2_RX_U16);
@@ -117,6 +112,23 @@ void HAL_GetTime(HAL_RTC_values_str* HAL_RTC_values_STR)
 	HAL_RTC_values_STR->hours_U8 = sTime_EN.Hours;
 	HAL_RTC_values_STR->minutes_U8 = sTime_EN.Minutes;
 	HAL_RTC_values_STR->seconds_U8 = sTime_EN.Seconds;
+}
+
+/**
+ * @fn uint32_t HAL_GetTimestamp_U32(void)
+ * @brief return the timestamp in seconds since 01/01/1970
+ *
+ * @pre
+ * @post
+ * @return
+ */
+uint32_t HAL_GetTimestamp_U32(void)
+{
+	RTC_DateTypeDef sDate_EN;
+	RTC_TimeTypeDef sTime_EN;
+	HAL_RTC_GetTime(&hrtc, &sTime_EN, RTC_FORMAT_BIN);
+	HAL_RTC_GetDate(&hrtc, &sDate_EN, RTC_FORMAT_BIN);
+	return (uint32_t)sTime_EN.Seconds + (uint32_t)sTime_EN.Minutes*60 + (uint32_t)sTime_EN.Hours*3600 + (uint32_t)sDate_EN.Date*86400 + (uint32_t)sDate_EN.Month*2592000 + (uint32_t)(sDate_EN.Year-1970)*31536000;
 }
 
 void HAL_InitDebugUart(void)

@@ -44,6 +44,7 @@ void HAL_enableRxDmaUart2(void);
 void HAL_flushUart2Buffer(void);
 void HAL_GetTime(HAL_RTC_values_str* HAL_RTC_values_STR);
 void HAL_InitDebugUart(void);
+uint32_t HAL_GetTimestamp_U32(void);
 
 
 #endif /* INC_HAL_H_ */

@@ -14,6 +14,7 @@
 #define NETWORK_ID_U8       (uint8_t) 0x69
 #define PRODUCT_TYPE_CA      (char*) "Box domotique"
 #define DOMOTIC_BOX_ADDRESS_U8 ((uint8_t) 0x45)
+#define PROTOCOL_VERSION_U8 (uint8_t) 0x01
 
 
 #endif /* INC_CONFIGURATION_H_ */
