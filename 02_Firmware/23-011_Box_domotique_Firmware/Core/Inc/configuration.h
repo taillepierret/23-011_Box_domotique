@@ -11,7 +11,7 @@
 #include <stdint.h>
 
 #define VERSION_FIRMWARE_CA (char*) "V00.00.00"
-#define NETWORK_ID_U8       (uint8_t) 0x69
+#define NETWORK_ID_U8       (uint8_t) 0x01
 #define PRODUCT_TYPE_CA      (char*) "Box domotique"
 #define DOMOTIC_BOX_ADDRESS_U8 ((uint8_t) 0x45)
 #define PROTOCOL_VERSION_U8 (uint8_t) 0x01
